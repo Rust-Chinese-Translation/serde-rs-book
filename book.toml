@@ -11,7 +11,7 @@ sidebar-width = "250px"
 
 [output.html]
 default-theme = "ayu"
-git-repository-url = ""
+git-repository-url = "https://github.com/zjp-CN/serde-rs-book"
 additional-css = ["theme/pagetoc.css"]
 additional-js = ["theme/pagetoc.js"]
 

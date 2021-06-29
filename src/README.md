@@ -9,12 +9,13 @@
 [Latest Version]: https://img.shields.io/crates/v/serde.svg?style=social
 [crates.io]: https://crates.io/crates/serde
 
+- 项目地址：[serde](https://github.com/serde-rs/serde)
 - 英文：
 [repo](https://github.com/serde-rs/serde-rs.github.io) |
 [渲染版](https://serde.rs)
 - 中文：
 [repo](https://github.com/zjp-CN/serde-rs-book) |
-渲染版 |
+[渲染版](https://zjp-cn.github.io/serde-rs-book) |
 [国内阅读站点](http://129.28.186.100/serde-rs-book)
 
 # Serde
@@ -23,38 +24,31 @@ Serde 是对 Rust 数据结构进行高效、通用地 序列化
 (***ser***ializing) 和反序列化 (***de***serializing) 的框架。
 
 Serde 生态由数据结构和数据格式组成：
-这些数据结构 (data structures) 能够让自身序列化、反序列化；
-这些数据格式 (data formats) 能够让数据序列化、反序列化。
+* 这些数据结构 (data structures) 能够让自身序列化、反序列化；
+* 这些数据格式 (data formats) 能够让数据序列化、反序列化。
 
+Serde 提供了数据结构与格式的交互层，让任何支持的数据结构，
+使用任何支持的数据格式来序列化、反序列化。
 
-The Serde ecosystem consists of data structures that know how to serialize and
-deserialize themselves along with data formats that know how to serialize and
-deserialize other things. Serde provides the layer by which these two groups
-interact with each other, allowing any supported data structure to be serialized
-and deserialized using any supported data format.
+## 设计阐述
 
-### Design
+很多其他编程语言依赖于运行时映射 (runtime reflection) 来对数据序列化，
+但 Serde 依赖的是 Rust 强大的 trait 系统。
 
-Where many other languages rely on runtime reflection for serializing data,
-Serde is instead built on Rust's powerful trait system. A data structure that
-knows how to serialize and deserialize itself is one that implements Serde's
-`Serialize` and `Deserialize` traits (or uses Serde's derive attribute to
-automatically generate implementations at compile time). This avoids any
-overhead of reflection or runtime type information. In fact in many situations
-the interaction between data structure and data format can be completely
-optimized away by the Rust compiler, leaving Serde serialization to perform
-the same speed as a handwritten serializer for the specific selection of data
-structure and data format.
+给数据结构实现 Serde 的 `Serialize` 和 `Deserialize` traits 就能让其自身序列化、反序列化，
+或者使用 Serde 的 derive 属性，让数据结构在编译期自动实现这两个 traits 。
+这种方式避免了映射或解析运行时类型信息造成的开销。
 
-### Data formats
+实际上，很多情况下，Rust 编译器可以完全优化掉数据结构和数据格式之间的交互开销，
+使得 Serde 序列化就像针对特定的数据结构和格式手写 serializer 一样高效。
 
-The following is a partial list of data formats that have been implemented for
-Serde by the community.
+## 数据格式
 
-- [JSON], the ubiquitous JavaScript Object Notation used by many HTTP APIs.
-- [Bincode], a compact binary format used for IPC within the Servo rendering
-  engine.
-- [CBOR], a Concise Binary Object Representation designed for small message size
+以下是支持 Serde 的部分数据格式，由社区人员编写：
+
+- [JSON] 广泛用于 HTTP APIs 的数据格式
+- [Bincode] 在 Servo渲染引擎中用于 IPC 的一种压缩二进制格式
+- [CBOR]  a Concise Binary Object Representation designed for small message size
   without the need for version negotiation.
 - [YAML], a self-proclaimed human-friendly configuration language that ain't
   markup language.
@@ -108,7 +102,7 @@ Serde by the community.
 [rusoto_dynamodb]: https://docs.rs/rusoto_dynamodb
 [Hjson]: https://github.com/Canop/deser-hjson
 
-### Data structures
+## Data structures
 
 Out of the box, Serde is able to serialize and deserialize common Rust data
 types in any of the above formats. For example `String`, `&str`, `usize`,
