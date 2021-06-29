@@ -1,0 +1,3 @@
+[submodule "serde-rs.github.io"]
+	path = serde-rs.github.io
+	url = https://github.com/serde-rs/serde-rs.github.io
