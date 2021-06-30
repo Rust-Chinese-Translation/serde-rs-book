@@ -1,12 +1,17 @@
-# Getting help
+# 获取帮助
 
-Serde is one of the most widely used Rust libraries so any place that Rustaceans
-congregate will be able to help you out. For chat, consider trying the
-[#general] or [#beginners] channels of the unofficial community Discord, the
-[#rust-usage] channel of the official Rust Project Discord, or the
-[#general][zulip] stream in Zulip. For asynchronous, consider the [\[rust\] tag
-on StackOverflow][stackoverflow], the [/r/rust] subreddit which has a pinned
-weekly easy questions post, or the Rust [Discourse forum][discourse].
+Serde 是 Rust 库生态中被最广泛使用的一个库，
+所以任何 Rustaceans 聚集的地方都能帮助你了解 Serde 。
+
+实时聊天室：
+* 非官方的社区 Discord ：[#general] 或者 [#beginners] 频道
+* Rust 官方 Discord ： [#rust-usage] 频道
+* Rust 官方 Zulip ：[#general][zulip]
+
+非实时：
+* StackOverflow ：[\[rust\] tag][stackoverflow]
+* reddit ：[/r/rust] 固定每周探讨简单的帖子
+* Rust [Discourse forum][discourse]
 
 [#general]: https://discord.com/channels/273534239310479360/274215136414400513
 [#beginners]: https://discord.com/channels/273534239310479360/273541522815713281
