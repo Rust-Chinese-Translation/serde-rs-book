@@ -1,35 +1,28 @@
-# Using derive
+# 使用 derive 宏
 
-Serde provides a derive macro to generate implementations of the `Serialize` and
-`Deserialize` traits for data structures defined in your crate, allowing them to
-be represented conveniently in all of Serde's data formats.
+Serde 提供一个 derive 宏，给定义在你 crate 中的数据结构生成
+`Serialize` 和 `Deserialize` traits 的方法实现，
+让你的数据结构在所有 Serde 支持的数据格式中方便地映射。
 
-**You only need to set this up if your code is using `#[derive(Serialize,
-Deserialize)]`.**
+**你只需要在代码中使用 `#[derive(Serialize, Deserialize)]` ，那么一些准备就绪。**
 
-This functionality is based on Rust's `#[derive]` mechanism, just like what you
-would use to automatically derive implementations of the built-in `Clone`,
-`Copy`, `Debug`, or other traits. It is able to generate implementations for
-most structs and enums including ones with elaborate generic types or trait
-bounds. On rare occasions, for an especially convoluted type you may need to
-[implement the traits manually](custom-serialization.md).
+这句代码提供的功能是基于 Rust 的 `#[derive]` 机制，
+就像你使用内置的 `Clone`、`Copy`、 `Debug` traits 那样，它会自动添加方法实现。
+你可以给大多数带泛型、trait bound 的结构体、枚举体实现那两个 traits 。
+只有在极少数的情况下，你才可能需要给一个尤为复杂的类型
+[手动实现](custom-serialization.md) 那两个 traits 。
 
-These derives require a Rust compiler version 1.31 or newer.
+Serde 的 derive 宏要求 Rust 编译器的版本至少为 1.31 ，然后完成以下操作：
 
-!CHECKLIST
-- Add `serde = { version = "1.0", features = ["derive"] }` as a dependency in
-  Cargo.toml.
-- Ensure that all other Serde-based dependencies (for example serde_json) are on
-  a version that is compatible with serde 1.0.
-- On structs and enums that you want to serialize, import the derive macro as
-  `use serde::Serialize;` within the same module and write
-  `#[derive(Serialize)]` on the struct or enum.
-- Similarly import `use serde::Deserialize;` and write `#[derive(Deserialize)]`
-  on structs and enums that you want to deserialize.
+- 在 Cargo.toml 中添加 `serde = { version = "1.0", features = ["derive"] }` 依赖
+- 确保所有基于 Serde 的依赖（比如 serde_json ）与 serde 1.0 兼容 
+- 在你想序列化的结构体和枚举体所在的模块中，导入 derive 宏
+  `use serde::Serialize;` ，然后给结构体或枚举体添加 `#[derive(Serialize)]` 
+- 类似地，使用 `use serde::Deserialize;` 导入，然后给想要反序列化的结构体或枚举体添加
+  `#[derive(Deserialize)]`
 
-Here is the `Cargo.toml`:
+在 `Cargo.toml` 中写入以下内容：
 
-!FILENAME Cargo.toml
 ```toml
 [package]
 name = "my-crate"
@@ -43,10 +36,8 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 ```
 
-Now the `src/main.rs` which uses Serde's custom derives:
+然后在 `src/main.rs` 文件中：
 
-!FILENAME src/main.rs
-!PLAYGROUND 1dbc76000e9875fac72c2865748842d7
 ```rust
 use serde::{Serialize, Deserialize};
 
@@ -67,7 +58,7 @@ fn main() {
 }
 ```
 
-Here is the output:
+输出结果：
 
 ```
 $ cargo run
@@ -75,23 +66,20 @@ serialized = {"x":1,"y":2}
 deserialized = Point { x: 1, y: 2 }
 ```
 
-### Troubleshooting
+# 疑难解答
 
-Sometimes you may see compile-time errors that tell you:
+有时，及时你给结构体、枚举体加上了 `#[derive(Serialize)]`，依然遇到编译期报错：
 
 ```
 the trait `serde::ser::Serialize` is not implemented for `...`
 ```
 
-even though the struct or enum clearly has `#[derive(Serialize)]` on it.
+这说明你使用的库与 Serde 版本不兼容。
+在你的 Cargo.toml 配置中依赖了 serde 1.0 版本，
+但有的库依赖了 serde 0.9 。
+所以你的数据结果实现了 serde 1.0 的 `Serialize` trait  ，
+而那个库需要来自 serde 0.9 的 `Serialize` trait 。
+Rust 编译器把它们视为不同的 traits 。
 
-This almost always means that you are using libraries that depend on
-incompatible versions of Serde. You may be depending on serde 1.0 in your
-Cargo.toml but using some other library that depends on serde 0.9. So the
-`Serialize` trait from serde 1.0 may be implemented, but the library expects an
-implementation of the `Serialize` trait from serde 0.9. From the Rust compiler's
-perspective these are totally different traits.
-
-The fix is to upgrade or downgrade libraries as appropriate until the Serde
-versions match. The `cargo tree -d` command is helpful for finding all the
-places that duplicate dependencies are being pulled in.
+解决办法是更新或者降低版本，直到它们的 serde 版本一致。
+`cargo tree -d` 命令帮助你找到下载的所有重复依赖。
