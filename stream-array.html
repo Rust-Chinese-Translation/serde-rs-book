@@ -1,0 +1,386 @@
+<!DOCTYPE HTML>
+<html lang="zh" class="sidebar-visible no-js ayu">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Array of values without buffering - serde-rs 入门文档</title>
+                
+
+        <!-- Custom HTML head -->
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+                <link rel="icon" href="favicon.svg">
+                        <link rel="shortcut icon" href="favicon.png">
+                <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+                <link rel="stylesheet" href="fonts/fonts.css">
+        
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+                <link rel="stylesheet" href="theme/pagetoc.css">
+        
+            </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "ayu";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> 总览</a></li><li class="chapter-item expanded "><a href="help.html"><strong aria-hidden="true">2.</strong> 帮助说明</a></li><li class="chapter-item expanded "><a href="data-model.html"><strong aria-hidden="true">3.</strong> Serde 数据模型</a></li><li class="chapter-item expanded "><a href="derive.html"><strong aria-hidden="true">4.</strong> 使用 derive 宏</a></li><li class="chapter-item expanded "><a href="attributes.html"><strong aria-hidden="true">5.</strong> 属性</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="container-attrs.html"><strong aria-hidden="true">5.1.</strong> container 属性</a></li><li class="chapter-item expanded "><a href="variant-attrs.html"><strong aria-hidden="true">5.2.</strong> variant 属性</a></li><li class="chapter-item expanded "><a href="field-attrs.html"><strong aria-hidden="true">5.3.</strong> field 属性</a></li></ol></li><li class="chapter-item expanded "><a href="custom-serialization.html"><strong aria-hidden="true">6.</strong> 自定义序列化</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="impl-serialize.html"><strong aria-hidden="true">6.1.</strong> 实现 Serialize</a></li><li class="chapter-item expanded "><a href="impl-deserialize.html"><strong aria-hidden="true">6.2.</strong> 实现 Deserialize</a></li><li class="chapter-item expanded "><a href="unit-testing.html"><strong aria-hidden="true">6.3.</strong> 单元测试</a></li></ol></li><li class="chapter-item expanded "><a href="data-format.html"><strong aria-hidden="true">7.</strong> 手写数据格式</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="conventions.html"><strong aria-hidden="true">7.1.</strong> 惯例</a></li><li class="chapter-item expanded "><a href="error-handling.html"><strong aria-hidden="true">7.2.</strong> 错误处理</a></li><li class="chapter-item expanded "><a href="impl-serializer.html"><strong aria-hidden="true">7.3.</strong> 实现 Serializer</a></li><li class="chapter-item expanded "><a href="impl-deserializer.html"><strong aria-hidden="true">7.4.</strong> 实现 Deserializer</a></li></ol></li><li class="chapter-item expanded "><a href="lifetimes.html"><strong aria-hidden="true">8.</strong> Deserializer lifetimes</a></li><li class="chapter-item expanded "><a href="examples.html"><strong aria-hidden="true">9.</strong> 例子</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="json.html"><strong aria-hidden="true">9.1.</strong> JSON 与结构体/枚举体</a></li><li class="chapter-item expanded "><a href="enum-representations.html"><strong aria-hidden="true">9.2.</strong> 用于枚举体</a></li><li class="chapter-item expanded "><a href="attr-default.html"><strong aria-hidden="true">9.3.</strong> 给字段设置默认值</a></li><li class="chapter-item expanded "><a href="attr-flatten.html"><strong aria-hidden="true">9.4.</strong> 结构体展平</a></li><li class="chapter-item expanded "><a href="attr-bound.html"><strong aria-hidden="true">9.5.</strong> 手写泛型 bounds</a></li><li class="chapter-item expanded "><a href="deserialize-map.html"><strong aria-hidden="true">9.6.</strong> Deserialize for custom map type</a></li><li class="chapter-item expanded "><a href="stream-array.html" class="active"><strong aria-hidden="true">9.7.</strong> Array of values without buffering</a></li><li class="chapter-item expanded "><a href="enum-number.html"><strong aria-hidden="true">9.8.</strong> Serialize enum as number</a></li><li class="chapter-item expanded "><a href="attr-rename.html"><strong aria-hidden="true">9.9.</strong> Serialize fields as camelCase</a></li><li class="chapter-item expanded "><a href="attr-skip-serializing.html"><strong aria-hidden="true">9.10.</strong> Skip serializing field</a></li><li class="chapter-item expanded "><a href="remote-derive.html"><strong aria-hidden="true">9.11.</strong> Derive for remote crate</a></li><li class="chapter-item expanded "><a href="deserialize-struct.html"><strong aria-hidden="true">9.12.</strong> Manually deserialize struct</a></li><li class="chapter-item expanded "><a href="ignored-any.html"><strong aria-hidden="true">9.13.</strong> Discarding data</a></li><li class="chapter-item expanded "><a href="transcode.html"><strong aria-hidden="true">9.14.</strong> Transcode into another format</a></li><li class="chapter-item expanded "><a href="string-or-struct.html"><strong aria-hidden="true">9.15.</strong> Either string or struct</a></li><li class="chapter-item expanded "><a href="convert-error.html"><strong aria-hidden="true">9.16.</strong> Convert error types</a></li><li class="chapter-item expanded "><a href="custom-date-format.html"><strong aria-hidden="true">9.17.</strong> Custom date format</a></li></ol></li><li class="chapter-item expanded "><a href="no-std.html"><strong aria-hidden="true">10.</strong> No-std support</a></li><li class="chapter-item expanded "><a href="feature-flags.html"><strong aria-hidden="true">11.</strong> Feature flags</a></li></ol>            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu (default)</button></li>
+                        </ul>
+                                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                                            </div>
+
+                    <h1 class="menu-title">serde-rs 入门文档</h1>
+
+                    <div class="right-buttons">
+                                                                        <a href="https://github.com/zjp-CN/serde-rs-book" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                                                
+                    </div>
+                </div>
+
+                                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <h1 id="process-an-array-of-values-without-buffering-into-a-vec"><a class="header" href="#process-an-array-of-values-without-buffering-into-a-vec">Process an array of values without buffering into a Vec</a></h1>
+<p>Suppose we have an array of integers and we want to figure out the maximum value
+without holding the whole array in memory all at once. This approach can be
+adapted to handle a variety of other situations in which data needs to be
+processed while being deserialized instead of after.</p>
+<p>!PLAYGROUND 270186a56b8321704dc45001fdfa3c92</p>
+<pre><pre class="playground"><code class="language-rust">use serde::{Deserialize, Deserializer};
+use serde::de::{self, Visitor, SeqAccess};
+
+use std::{cmp, fmt};
+use std::marker::PhantomData;
+
+#[derive(Deserialize)]
+struct Outer {
+<span class="boring">    #[allow(dead_code)]
+</span>    id: String,
+
+    // Deserialize this field by computing the maximum value of a sequence
+    // (JSON array) of values.
+    #[serde(deserialize_with = &quot;deserialize_max&quot;)]
+    // Despite the struct field being named `max_value`, it is going to come
+    // from a JSON field called `values`.
+    #[serde(rename(deserialize = &quot;values&quot;))]
+    max_value: u64,
+}
+
+/// Deserialize the maximum of a sequence of values. The entire sequence
+/// is not buffered into memory as it would be if we deserialize to Vec&lt;T&gt;
+/// and then compute the maximum later.
+///
+/// This function is generic over T which can be any type that implements
+/// Ord. Above, it is used with T=u64.
+fn deserialize_max&lt;'de, T, D&gt;(deserializer: D) -&gt; Result&lt;T, D::Error&gt;
+where
+    T: Deserialize&lt;'de&gt; + Ord,
+    D: Deserializer&lt;'de&gt;,
+{
+    struct MaxVisitor&lt;T&gt;(PhantomData&lt;fn() -&gt; T&gt;);
+
+    impl&lt;'de, T&gt; Visitor&lt;'de&gt; for MaxVisitor&lt;T&gt;
+    where
+        T: Deserialize&lt;'de&gt; + Ord,
+    {
+        /// Return type of this visitor. This visitor computes the max of a
+        /// sequence of values of type T, so the type of the maximum is T.
+        type Value = T;
+
+        fn expecting(&amp;self, formatter: &amp;mut fmt::Formatter) -&gt; fmt::Result {
+            formatter.write_str(&quot;a nonempty sequence of numbers&quot;)
+        }
+
+        fn visit_seq&lt;S&gt;(self, mut seq: S) -&gt; Result&lt;T, S::Error&gt;
+        where
+            S: SeqAccess&lt;'de&gt;,
+        {
+            // Start with max equal to the first value in the seq.
+            let mut max = seq.next_element()?.ok_or_else(||
+                // Cannot take the maximum of an empty seq.
+                de::Error::custom(&quot;no values in seq when looking for maximum&quot;)
+            )?;
+
+            // Update the max while there are additional values.
+            while let Some(value) = seq.next_element()? {
+                max = cmp::max(max, value);
+            }
+
+            Ok(max)
+        }
+    }
+
+    // Create the visitor and ask the deserializer to drive it. The
+    // deserializer will call visitor.visit_seq() if a seq is present in
+    // the input data.
+    let visitor = MaxVisitor(PhantomData);
+    deserializer.deserialize_seq(visitor)
+}
+
+fn main() {
+    let j = r#&quot;
+        {
+          &quot;id&quot;: &quot;demo-deserialize-max&quot;,
+          &quot;values&quot;: [
+            256,
+            100,
+            384,
+            314,
+            271
+          ]
+        }
+    &quot;#;
+
+    let out: Outer = serde_json::from_str(j).unwrap();
+
+    // Prints &quot;max value: 384&quot;
+    println!(&quot;max value: {}&quot;, out.max_value);
+}
+</code></pre></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                                                    <a rel="prev" href="deserialize-map.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+                                                    <a rel="next" href="enum-number.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                                    <a rel="prev" href="deserialize-map.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+                                    <a rel="next" href="enum-number.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                            </nav>
+
+        </div>
+
+        
+        
+        
+                <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+                <script src="ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="editor.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mode-rust.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-dawn.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-tomorrow_night.js" type="text/javascript" charset="utf-8"></script>
+        
+                <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+                <script type="text/javascript" src="theme/pagetoc.js"></script>
+        
+        
+    </body>
+</html>

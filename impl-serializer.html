@@ -1,0 +1,855 @@
+<!DOCTYPE HTML>
+<html lang="zh" class="sidebar-visible no-js ayu">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>实现 Serializer - serde-rs 入门文档</title>
+                
+
+        <!-- Custom HTML head -->
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+                <link rel="icon" href="favicon.svg">
+                        <link rel="shortcut icon" href="favicon.png">
+                <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+                <link rel="stylesheet" href="fonts/fonts.css">
+        
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+                <link rel="stylesheet" href="theme/pagetoc.css">
+        
+            </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "ayu";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> 总览</a></li><li class="chapter-item expanded "><a href="help.html"><strong aria-hidden="true">2.</strong> 帮助说明</a></li><li class="chapter-item expanded "><a href="data-model.html"><strong aria-hidden="true">3.</strong> Serde 数据模型</a></li><li class="chapter-item expanded "><a href="derive.html"><strong aria-hidden="true">4.</strong> 使用 derive 宏</a></li><li class="chapter-item expanded "><a href="attributes.html"><strong aria-hidden="true">5.</strong> 属性</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="container-attrs.html"><strong aria-hidden="true">5.1.</strong> container 属性</a></li><li class="chapter-item expanded "><a href="variant-attrs.html"><strong aria-hidden="true">5.2.</strong> variant 属性</a></li><li class="chapter-item expanded "><a href="field-attrs.html"><strong aria-hidden="true">5.3.</strong> field 属性</a></li></ol></li><li class="chapter-item expanded "><a href="custom-serialization.html"><strong aria-hidden="true">6.</strong> 自定义序列化</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="impl-serialize.html"><strong aria-hidden="true">6.1.</strong> 实现 Serialize</a></li><li class="chapter-item expanded "><a href="impl-deserialize.html"><strong aria-hidden="true">6.2.</strong> 实现 Deserialize</a></li><li class="chapter-item expanded "><a href="unit-testing.html"><strong aria-hidden="true">6.3.</strong> 单元测试</a></li></ol></li><li class="chapter-item expanded "><a href="data-format.html"><strong aria-hidden="true">7.</strong> 手写数据格式</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="conventions.html"><strong aria-hidden="true">7.1.</strong> 惯例</a></li><li class="chapter-item expanded "><a href="error-handling.html"><strong aria-hidden="true">7.2.</strong> 错误处理</a></li><li class="chapter-item expanded "><a href="impl-serializer.html" class="active"><strong aria-hidden="true">7.3.</strong> 实现 Serializer</a></li><li class="chapter-item expanded "><a href="impl-deserializer.html"><strong aria-hidden="true">7.4.</strong> 实现 Deserializer</a></li></ol></li><li class="chapter-item expanded "><a href="lifetimes.html"><strong aria-hidden="true">8.</strong> Deserializer lifetimes</a></li><li class="chapter-item expanded "><a href="examples.html"><strong aria-hidden="true">9.</strong> 例子</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="json.html"><strong aria-hidden="true">9.1.</strong> JSON 与结构体/枚举体</a></li><li class="chapter-item expanded "><a href="enum-representations.html"><strong aria-hidden="true">9.2.</strong> 用于枚举体</a></li><li class="chapter-item expanded "><a href="attr-default.html"><strong aria-hidden="true">9.3.</strong> 给字段设置默认值</a></li><li class="chapter-item expanded "><a href="attr-flatten.html"><strong aria-hidden="true">9.4.</strong> 结构体展平</a></li><li class="chapter-item expanded "><a href="attr-bound.html"><strong aria-hidden="true">9.5.</strong> 手写泛型 bounds</a></li><li class="chapter-item expanded "><a href="deserialize-map.html"><strong aria-hidden="true">9.6.</strong> Deserialize for custom map type</a></li><li class="chapter-item expanded "><a href="stream-array.html"><strong aria-hidden="true">9.7.</strong> Array of values without buffering</a></li><li class="chapter-item expanded "><a href="enum-number.html"><strong aria-hidden="true">9.8.</strong> Serialize enum as number</a></li><li class="chapter-item expanded "><a href="attr-rename.html"><strong aria-hidden="true">9.9.</strong> Serialize fields as camelCase</a></li><li class="chapter-item expanded "><a href="attr-skip-serializing.html"><strong aria-hidden="true">9.10.</strong> Skip serializing field</a></li><li class="chapter-item expanded "><a href="remote-derive.html"><strong aria-hidden="true">9.11.</strong> Derive for remote crate</a></li><li class="chapter-item expanded "><a href="deserialize-struct.html"><strong aria-hidden="true">9.12.</strong> Manually deserialize struct</a></li><li class="chapter-item expanded "><a href="ignored-any.html"><strong aria-hidden="true">9.13.</strong> Discarding data</a></li><li class="chapter-item expanded "><a href="transcode.html"><strong aria-hidden="true">9.14.</strong> Transcode into another format</a></li><li class="chapter-item expanded "><a href="string-or-struct.html"><strong aria-hidden="true">9.15.</strong> Either string or struct</a></li><li class="chapter-item expanded "><a href="convert-error.html"><strong aria-hidden="true">9.16.</strong> Convert error types</a></li><li class="chapter-item expanded "><a href="custom-date-format.html"><strong aria-hidden="true">9.17.</strong> Custom date format</a></li></ol></li><li class="chapter-item expanded "><a href="no-std.html"><strong aria-hidden="true">10.</strong> No-std support</a></li><li class="chapter-item expanded "><a href="feature-flags.html"><strong aria-hidden="true">11.</strong> Feature flags</a></li></ol>            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu (default)</button></li>
+                        </ul>
+                                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                                            </div>
+
+                    <h1 class="menu-title">serde-rs 入门文档</h1>
+
+                    <div class="right-buttons">
+                                                                        <a href="https://github.com/zjp-CN/serde-rs-book" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                                                
+                    </div>
+                </div>
+
+                                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <h1 id="implementing-a-serializer"><a class="header" href="#implementing-a-serializer">Implementing a Serializer</a></h1>
+<p>This page gives a basic but functional implementation of a JSON serializer using
+Serde.</p>
+<p>The <a href="https://docs.serde.rs/serde/trait.Serializer.html"><code>Serializer</code></a> trait has a lot of methods but none of the ones in this
+implementation are complicated. Each method corresponds to one of the types of
+the <a href="data-model.html">Serde data model</a>. The serializer is responsible for mapping the data model
+into the output representation, in this case JSON.</p>
+<p>Refer to the rustdoc of the <code>Serializer</code> trait for examples of how each method
+is used.</p>
+<p>!FILENAME src/ser.rs</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">mod error {
+</span><span class="boring">    pub use serde::de::value::Error;
+</span><span class="boring">    pub type Result&lt;T&gt; = ::std::result::Result&lt;T, Error&gt;;
+</span><span class="boring">}
+</span><span class="boring">
+</span>use serde::{ser, Serialize};
+
+use error::{Error, Result};
+
+pub struct Serializer {
+    // This string starts empty and JSON is appended as values are serialized.
+    output: String,
+}
+
+// By convention, the public API of a Serde serializer is one or more `to_abc`
+// functions such as `to_string`, `to_bytes`, or `to_writer` depending on what
+// Rust types the serializer is able to produce as output.
+//
+// This basic serializer supports only `to_string`.
+pub fn to_string&lt;T&gt;(value: &amp;T) -&gt; Result&lt;String&gt;
+where
+    T: Serialize,
+{
+    let mut serializer = Serializer {
+        output: String::new(),
+    };
+    value.serialize(&amp;mut serializer)?;
+    Ok(serializer.output)
+}
+
+impl&lt;'a&gt; ser::Serializer for &amp;'a mut Serializer {
+    // The output type produced by this `Serializer` during successful
+    // serialization. Most serializers that produce text or binary output should
+    // set `Ok = ()` and serialize into an `io::Write` or buffer contained
+    // within the `Serializer` instance, as happens here. Serializers that build
+    // in-memory data structures may be simplified by using `Ok` to propagate
+    // the data structure around.
+    type Ok = ();
+
+    // The error type when some error occurs during serialization.
+    type Error = Error;
+
+    // Associated types for keeping track of additional state while serializing
+    // compound data structures like sequences and maps. In this case no
+    // additional state is required beyond what is already stored in the
+    // Serializer struct.
+    type SerializeSeq = Self;
+    type SerializeTuple = Self;
+    type SerializeTupleStruct = Self;
+    type SerializeTupleVariant = Self;
+    type SerializeMap = Self;
+    type SerializeStruct = Self;
+    type SerializeStructVariant = Self;
+
+    // Here we go with the simple methods. The following 12 methods receive one
+    // of the primitive types of the data model and map it to JSON by appending
+    // into the output string.
+    fn serialize_bool(self, v: bool) -&gt; Result&lt;()&gt; {
+        self.output += if v { &quot;true&quot; } else { &quot;false&quot; };
+        Ok(())
+    }
+
+    // JSON does not distinguish between different sizes of integers, so all
+    // signed integers will be serialized the same and all unsigned integers
+    // will be serialized the same. Other formats, especially compact binary
+    // formats, may need independent logic for the different sizes.
+    fn serialize_i8(self, v: i8) -&gt; Result&lt;()&gt; {
+        self.serialize_i64(i64::from(v))
+    }
+
+    fn serialize_i16(self, v: i16) -&gt; Result&lt;()&gt; {
+        self.serialize_i64(i64::from(v))
+    }
+
+    fn serialize_i32(self, v: i32) -&gt; Result&lt;()&gt; {
+        self.serialize_i64(i64::from(v))
+    }
+
+    // Not particularly efficient but this is example code anyway. A more
+    // performant approach would be to use the `itoa` crate.
+    fn serialize_i64(self, v: i64) -&gt; Result&lt;()&gt; {
+        self.output += &amp;v.to_string();
+        Ok(())
+    }
+
+    fn serialize_u8(self, v: u8) -&gt; Result&lt;()&gt; {
+        self.serialize_u64(u64::from(v))
+    }
+
+    fn serialize_u16(self, v: u16) -&gt; Result&lt;()&gt; {
+        self.serialize_u64(u64::from(v))
+    }
+
+    fn serialize_u32(self, v: u32) -&gt; Result&lt;()&gt; {
+        self.serialize_u64(u64::from(v))
+    }
+
+    fn serialize_u64(self, v: u64) -&gt; Result&lt;()&gt; {
+        self.output += &amp;v.to_string();
+        Ok(())
+    }
+
+    fn serialize_f32(self, v: f32) -&gt; Result&lt;()&gt; {
+        self.serialize_f64(f64::from(v))
+    }
+
+    fn serialize_f64(self, v: f64) -&gt; Result&lt;()&gt; {
+        self.output += &amp;v.to_string();
+        Ok(())
+    }
+
+    // Serialize a char as a single-character string. Other formats may
+    // represent this differently.
+    fn serialize_char(self, v: char) -&gt; Result&lt;()&gt; {
+        self.serialize_str(&amp;v.to_string())
+    }
+
+    // This only works for strings that don't require escape sequences but you
+    // get the idea. For example it would emit invalid JSON if the input string
+    // contains a '&quot;' character.
+    fn serialize_str(self, v: &amp;str) -&gt; Result&lt;()&gt; {
+        self.output += &quot;\&quot;&quot;;
+        self.output += v;
+        self.output += &quot;\&quot;&quot;;
+        Ok(())
+    }
+
+    // Serialize a byte array as an array of bytes. Could also use a base64
+    // string here. Binary formats will typically represent byte arrays more
+    // compactly.
+    fn serialize_bytes(self, v: &amp;[u8]) -&gt; Result&lt;()&gt; {
+        use serde::ser::SerializeSeq;
+        let mut seq = self.serialize_seq(Some(v.len()))?;
+        for byte in v {
+            seq.serialize_element(byte)?;
+        }
+        seq.end()
+    }
+
+    // An absent optional is represented as the JSON `null`.
+    fn serialize_none(self) -&gt; Result&lt;()&gt; {
+        self.serialize_unit()
+    }
+
+    // A present optional is represented as just the contained value. Note that
+    // this is a lossy representation. For example the values `Some(())` and
+    // `None` both serialize as just `null`. Unfortunately this is typically
+    // what people expect when working with JSON. Other formats are encouraged
+    // to behave more intelligently if possible.
+    fn serialize_some&lt;T&gt;(self, value: &amp;T) -&gt; Result&lt;()&gt;
+    where
+        T: ?Sized + Serialize,
+    {
+        value.serialize(self)
+    }
+
+    // In Serde, unit means an anonymous value containing no data. Map this to
+    // JSON as `null`.
+    fn serialize_unit(self) -&gt; Result&lt;()&gt; {
+        self.output += &quot;null&quot;;
+        Ok(())
+    }
+
+    // Unit struct means a named value containing no data. Again, since there is
+    // no data, map this to JSON as `null`. There is no need to serialize the
+    // name in most formats.
+    fn serialize_unit_struct(self, _name: &amp;'static str) -&gt; Result&lt;()&gt; {
+        self.serialize_unit()
+    }
+
+    // When serializing a unit variant (or any other kind of variant), formats
+    // can choose whether to keep track of it by index or by name. Binary
+    // formats typically use the index of the variant and human-readable formats
+    // typically use the name.
+    fn serialize_unit_variant(
+        self,
+        _name: &amp;'static str,
+        _variant_index: u32,
+        variant: &amp;'static str,
+    ) -&gt; Result&lt;()&gt; {
+        self.serialize_str(variant)
+    }
+
+    // As is done here, serializers are encouraged to treat newtype structs as
+    // insignificant wrappers around the data they contain.
+    fn serialize_newtype_struct&lt;T&gt;(
+        self,
+        _name: &amp;'static str,
+        value: &amp;T,
+    ) -&gt; Result&lt;()&gt;
+    where
+        T: ?Sized + Serialize,
+    {
+        value.serialize(self)
+    }
+
+    // Note that newtype variant (and all of the other variant serialization
+    // methods) refer exclusively to the &quot;externally tagged&quot; enum
+    // representation.
+    //
+    // Serialize this to JSON in externally tagged form as `{ NAME: VALUE }`.
+    fn serialize_newtype_variant&lt;T&gt;(
+        self,
+        _name: &amp;'static str,
+        _variant_index: u32,
+        variant: &amp;'static str,
+        value: &amp;T,
+    ) -&gt; Result&lt;()&gt;
+    where
+        T: ?Sized + Serialize,
+    {
+        self.output += &quot;{&quot;;
+        variant.serialize(&amp;mut *self)?;
+        self.output += &quot;:&quot;;
+        value.serialize(&amp;mut *self)?;
+        self.output += &quot;}&quot;;
+        Ok(())
+    }
+
+    // Now we get to the serialization of compound types.
+    //
+    // The start of the sequence, each value, and the end are three separate
+    // method calls. This one is responsible only for serializing the start,
+    // which in JSON is `[`.
+    //
+    // The length of the sequence may or may not be known ahead of time. This
+    // doesn't make a difference in JSON because the length is not represented
+    // explicitly in the serialized form. Some serializers may only be able to
+    // support sequences for which the length is known up front.
+    fn serialize_seq(self, _len: Option&lt;usize&gt;) -&gt; Result&lt;Self::SerializeSeq&gt; {
+        self.output += &quot;[&quot;;
+        Ok(self)
+    }
+
+    // Tuples look just like sequences in JSON. Some formats may be able to
+    // represent tuples more efficiently by omitting the length, since tuple
+    // means that the corresponding `Deserialize implementation will know the
+    // length without needing to look at the serialized data.
+    fn serialize_tuple(self, len: usize) -&gt; Result&lt;Self::SerializeTuple&gt; {
+        self.serialize_seq(Some(len))
+    }
+
+    // Tuple structs look just like sequences in JSON.
+    fn serialize_tuple_struct(
+        self,
+        _name: &amp;'static str,
+        len: usize,
+    ) -&gt; Result&lt;Self::SerializeTupleStruct&gt; {
+        self.serialize_seq(Some(len))
+    }
+
+    // Tuple variants are represented in JSON as `{ NAME: [DATA...] }`. Again
+    // this method is only responsible for the externally tagged representation.
+    fn serialize_tuple_variant(
+        self,
+        _name: &amp;'static str,
+        _variant_index: u32,
+        variant: &amp;'static str,
+        _len: usize,
+    ) -&gt; Result&lt;Self::SerializeTupleVariant&gt; {
+        self.output += &quot;{&quot;;
+        variant.serialize(&amp;mut *self)?;
+        self.output += &quot;:[&quot;;
+        Ok(self)
+    }
+
+    // Maps are represented in JSON as `{ K: V, K: V, ... }`.
+    fn serialize_map(self, _len: Option&lt;usize&gt;) -&gt; Result&lt;Self::SerializeMap&gt; {
+        self.output += &quot;{&quot;;
+        Ok(self)
+    }
+
+    // Structs look just like maps in JSON. In particular, JSON requires that we
+    // serialize the field names of the struct. Other formats may be able to
+    // omit the field names when serializing structs because the corresponding
+    // Deserialize implementation is required to know what the keys are without
+    // looking at the serialized data.
+    fn serialize_struct(
+        self,
+        _name: &amp;'static str,
+        len: usize,
+    ) -&gt; Result&lt;Self::SerializeStruct&gt; {
+        self.serialize_map(Some(len))
+    }
+
+    // Struct variants are represented in JSON as `{ NAME: { K: V, ... } }`.
+    // This is the externally tagged representation.
+    fn serialize_struct_variant(
+        self,
+        _name: &amp;'static str,
+        _variant_index: u32,
+        variant: &amp;'static str,
+        _len: usize,
+    ) -&gt; Result&lt;Self::SerializeStructVariant&gt; {
+        self.output += &quot;{&quot;;
+        variant.serialize(&amp;mut *self)?;
+        self.output += &quot;:{&quot;;
+        Ok(self)
+    }
+}
+
+// The following 7 impls deal with the serialization of compound types like
+// sequences and maps. Serialization of such types is begun by a Serializer
+// method and followed by zero or more calls to serialize individual elements of
+// the compound type and one call to end the compound type.
+//
+// This impl is SerializeSeq so these methods are called after `serialize_seq`
+// is called on the Serializer.
+impl&lt;'a&gt; ser::SerializeSeq for &amp;'a mut Serializer {
+    // Must match the `Ok` type of the serializer.
+    type Ok = ();
+    // Must match the `Error` type of the serializer.
+    type Error = Error;
+
+    // Serialize a single element of the sequence.
+    fn serialize_element&lt;T&gt;(&amp;mut self, value: &amp;T) -&gt; Result&lt;()&gt;
+    where
+        T: ?Sized + Serialize,
+    {
+        if !self.output.ends_with('[') {
+            self.output += &quot;,&quot;;
+        }
+        value.serialize(&amp;mut **self)
+    }
+
+    // Close the sequence.
+    fn end(self) -&gt; Result&lt;()&gt; {
+        self.output += &quot;]&quot;;
+        Ok(())
+    }
+}
+
+// Same thing but for tuples.
+impl&lt;'a&gt; ser::SerializeTuple for &amp;'a mut Serializer {
+    type Ok = ();
+    type Error = Error;
+
+    fn serialize_element&lt;T&gt;(&amp;mut self, value: &amp;T) -&gt; Result&lt;()&gt;
+    where
+        T: ?Sized + Serialize,
+    {
+        if !self.output.ends_with('[') {
+            self.output += &quot;,&quot;;
+        }
+        value.serialize(&amp;mut **self)
+    }
+
+    fn end(self) -&gt; Result&lt;()&gt; {
+        self.output += &quot;]&quot;;
+        Ok(())
+    }
+}
+
+// Same thing but for tuple structs.
+impl&lt;'a&gt; ser::SerializeTupleStruct for &amp;'a mut Serializer {
+    type Ok = ();
+    type Error = Error;
+
+    fn serialize_field&lt;T&gt;(&amp;mut self, value: &amp;T) -&gt; Result&lt;()&gt;
+    where
+        T: ?Sized + Serialize,
+    {
+        if !self.output.ends_with('[') {
+            self.output += &quot;,&quot;;
+        }
+        value.serialize(&amp;mut **self)
+    }
+
+    fn end(self) -&gt; Result&lt;()&gt; {
+        self.output += &quot;]&quot;;
+        Ok(())
+    }
+}
+
+// Tuple variants are a little different. Refer back to the
+// `serialize_tuple_variant` method above:
+//
+//    self.output += &quot;{&quot;;
+//    variant.serialize(&amp;mut *self)?;
+//    self.output += &quot;:[&quot;;
+//
+// So the `end` method in this impl is responsible for closing both the `]` and
+// the `}`.
+impl&lt;'a&gt; ser::SerializeTupleVariant for &amp;'a mut Serializer {
+    type Ok = ();
+    type Error = Error;
+
+    fn serialize_field&lt;T&gt;(&amp;mut self, value: &amp;T) -&gt; Result&lt;()&gt;
+    where
+        T: ?Sized + Serialize,
+    {
+        if !self.output.ends_with('[') {
+            self.output += &quot;,&quot;;
+        }
+        value.serialize(&amp;mut **self)
+    }
+
+    fn end(self) -&gt; Result&lt;()&gt; {
+        self.output += &quot;]}&quot;;
+        Ok(())
+    }
+}
+
+// Some `Serialize` types are not able to hold a key and value in memory at the
+// same time so `SerializeMap` implementations are required to support
+// `serialize_key` and `serialize_value` individually.
+//
+// There is a third optional method on the `SerializeMap` trait. The
+// `serialize_entry` method allows serializers to optimize for the case where
+// key and value are both available simultaneously. In JSON it doesn't make a
+// difference so the default behavior for `serialize_entry` is fine.
+impl&lt;'a&gt; ser::SerializeMap for &amp;'a mut Serializer {
+    type Ok = ();
+    type Error = Error;
+
+    // The Serde data model allows map keys to be any serializable type. JSON
+    // only allows string keys so the implementation below will produce invalid
+    // JSON if the key serializes as something other than a string.
+    //
+    // A real JSON serializer would need to validate that map keys are strings.
+    // This can be done by using a different Serializer to serialize the key
+    // (instead of `&amp;mut **self`) and having that other serializer only
+    // implement `serialize_str` and return an error on any other data type.
+    fn serialize_key&lt;T&gt;(&amp;mut self, key: &amp;T) -&gt; Result&lt;()&gt;
+    where
+        T: ?Sized + Serialize,
+    {
+        if !self.output.ends_with('{') {
+            self.output += &quot;,&quot;;
+        }
+        key.serialize(&amp;mut **self)
+    }
+
+    // It doesn't make a difference whether the colon is printed at the end of
+    // `serialize_key` or at the beginning of `serialize_value`. In this case
+    // the code is a bit simpler having it here.
+    fn serialize_value&lt;T&gt;(&amp;mut self, value: &amp;T) -&gt; Result&lt;()&gt;
+    where
+        T: ?Sized + Serialize,
+    {
+        self.output += &quot;:&quot;;
+        value.serialize(&amp;mut **self)
+    }
+
+    fn end(self) -&gt; Result&lt;()&gt; {
+        self.output += &quot;}&quot;;
+        Ok(())
+    }
+}
+
+// Structs are like maps in which the keys are constrained to be compile-time
+// constant strings.
+impl&lt;'a&gt; ser::SerializeStruct for &amp;'a mut Serializer {
+    type Ok = ();
+    type Error = Error;
+
+    fn serialize_field&lt;T&gt;(&amp;mut self, key: &amp;'static str, value: &amp;T) -&gt; Result&lt;()&gt;
+    where
+        T: ?Sized + Serialize,
+    {
+        if !self.output.ends_with('{') {
+            self.output += &quot;,&quot;;
+        }
+        key.serialize(&amp;mut **self)?;
+        self.output += &quot;:&quot;;
+        value.serialize(&amp;mut **self)
+    }
+
+    fn end(self) -&gt; Result&lt;()&gt; {
+        self.output += &quot;}&quot;;
+        Ok(())
+    }
+}
+
+// Similar to `SerializeTupleVariant`, here the `end` method is responsible for
+// closing both of the curly braces opened by `serialize_struct_variant`.
+impl&lt;'a&gt; ser::SerializeStructVariant for &amp;'a mut Serializer {
+    type Ok = ();
+    type Error = Error;
+
+    fn serialize_field&lt;T&gt;(&amp;mut self, key: &amp;'static str, value: &amp;T) -&gt; Result&lt;()&gt;
+    where
+        T: ?Sized + Serialize,
+    {
+        if !self.output.ends_with('{') {
+            self.output += &quot;,&quot;;
+        }
+        key.serialize(&amp;mut **self)?;
+        self.output += &quot;:&quot;;
+        value.serialize(&amp;mut **self)
+    }
+
+    fn end(self) -&gt; Result&lt;()&gt; {
+        self.output += &quot;}}&quot;;
+        Ok(())
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+<span class="boring">macro_rules! not_actually_test {
+</span><span class="boring">    ($(#[test] $test:item)+) =&gt; {
+</span><span class="boring">        $($test)+
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">not_actually_test! {
+</span>#[test]
+fn test_struct() {
+    #[derive(Serialize)]
+    struct Test {
+        int: u32,
+        seq: Vec&lt;&amp;'static str&gt;,
+    }
+
+    let test = Test {
+        int: 1,
+        seq: vec![&quot;a&quot;, &quot;b&quot;],
+    };
+    let expected = r#&quot;{&quot;int&quot;:1,&quot;seq&quot;:[&quot;a&quot;,&quot;b&quot;]}&quot;#;
+    assert_eq!(to_string(&amp;test).unwrap(), expected);
+}
+
+#[test]
+fn test_enum() {
+    #[derive(Serialize)]
+    enum E {
+        Unit,
+        Newtype(u32),
+        Tuple(u32, u32),
+        Struct { a: u32 },
+    }
+
+    let u = E::Unit;
+    let expected = r#&quot;&quot;Unit&quot;&quot;#;
+    assert_eq!(to_string(&amp;u).unwrap(), expected);
+
+    let n = E::Newtype(1);
+    let expected = r#&quot;{&quot;Newtype&quot;:1}&quot;#;
+    assert_eq!(to_string(&amp;n).unwrap(), expected);
+
+    let t = E::Tuple(1, 2);
+    let expected = r#&quot;{&quot;Tuple&quot;:[1,2]}&quot;#;
+    assert_eq!(to_string(&amp;t).unwrap(), expected);
+
+    let s = E::Struct { a: 1 };
+    let expected = r#&quot;{&quot;Struct&quot;:{&quot;a&quot;:1}}&quot;#;
+    assert_eq!(to_string(&amp;s).unwrap(), expected);
+}
+<span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    test_struct();
+</span><span class="boring">    test_enum();
+</span><span class="boring">}
+</span></code></pre></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                                                    <a rel="prev" href="error-handling.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+                                                    <a rel="next" href="impl-deserializer.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                                    <a rel="prev" href="error-handling.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+                                    <a rel="next" href="impl-deserializer.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                            </nav>
+
+        </div>
+
+        
+        
+        
+                <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+                <script src="ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="editor.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mode-rust.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-dawn.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-tomorrow_night.js" type="text/javascript" charset="utf-8"></script>
+        
+                <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+                <script type="text/javascript" src="theme/pagetoc.js"></script>
+        
+        
+    </body>
+</html>

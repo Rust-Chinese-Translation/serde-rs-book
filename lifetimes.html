@@ -1,0 +1,556 @@
+<!DOCTYPE HTML>
+<html lang="zh" class="sidebar-visible no-js ayu">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Deserializer lifetimes - serde-rs 入门文档</title>
+                
+
+        <!-- Custom HTML head -->
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+                <link rel="icon" href="favicon.svg">
+                        <link rel="shortcut icon" href="favicon.png">
+                <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+                <link rel="stylesheet" href="fonts/fonts.css">
+        
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+                <link rel="stylesheet" href="theme/pagetoc.css">
+        
+            </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "ayu";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> 总览</a></li><li class="chapter-item expanded "><a href="help.html"><strong aria-hidden="true">2.</strong> 帮助说明</a></li><li class="chapter-item expanded "><a href="data-model.html"><strong aria-hidden="true">3.</strong> Serde 数据模型</a></li><li class="chapter-item expanded "><a href="derive.html"><strong aria-hidden="true">4.</strong> 使用 derive 宏</a></li><li class="chapter-item expanded "><a href="attributes.html"><strong aria-hidden="true">5.</strong> 属性</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="container-attrs.html"><strong aria-hidden="true">5.1.</strong> container 属性</a></li><li class="chapter-item expanded "><a href="variant-attrs.html"><strong aria-hidden="true">5.2.</strong> variant 属性</a></li><li class="chapter-item expanded "><a href="field-attrs.html"><strong aria-hidden="true">5.3.</strong> field 属性</a></li></ol></li><li class="chapter-item expanded "><a href="custom-serialization.html"><strong aria-hidden="true">6.</strong> 自定义序列化</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="impl-serialize.html"><strong aria-hidden="true">6.1.</strong> 实现 Serialize</a></li><li class="chapter-item expanded "><a href="impl-deserialize.html"><strong aria-hidden="true">6.2.</strong> 实现 Deserialize</a></li><li class="chapter-item expanded "><a href="unit-testing.html"><strong aria-hidden="true">6.3.</strong> 单元测试</a></li></ol></li><li class="chapter-item expanded "><a href="data-format.html"><strong aria-hidden="true">7.</strong> 手写数据格式</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="conventions.html"><strong aria-hidden="true">7.1.</strong> 惯例</a></li><li class="chapter-item expanded "><a href="error-handling.html"><strong aria-hidden="true">7.2.</strong> 错误处理</a></li><li class="chapter-item expanded "><a href="impl-serializer.html"><strong aria-hidden="true">7.3.</strong> 实现 Serializer</a></li><li class="chapter-item expanded "><a href="impl-deserializer.html"><strong aria-hidden="true">7.4.</strong> 实现 Deserializer</a></li></ol></li><li class="chapter-item expanded "><a href="lifetimes.html" class="active"><strong aria-hidden="true">8.</strong> Deserializer lifetimes</a></li><li class="chapter-item expanded "><a href="examples.html"><strong aria-hidden="true">9.</strong> 例子</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="json.html"><strong aria-hidden="true">9.1.</strong> JSON 与结构体/枚举体</a></li><li class="chapter-item expanded "><a href="enum-representations.html"><strong aria-hidden="true">9.2.</strong> 用于枚举体</a></li><li class="chapter-item expanded "><a href="attr-default.html"><strong aria-hidden="true">9.3.</strong> 给字段设置默认值</a></li><li class="chapter-item expanded "><a href="attr-flatten.html"><strong aria-hidden="true">9.4.</strong> 结构体展平</a></li><li class="chapter-item expanded "><a href="attr-bound.html"><strong aria-hidden="true">9.5.</strong> 手写泛型 bounds</a></li><li class="chapter-item expanded "><a href="deserialize-map.html"><strong aria-hidden="true">9.6.</strong> Deserialize for custom map type</a></li><li class="chapter-item expanded "><a href="stream-array.html"><strong aria-hidden="true">9.7.</strong> Array of values without buffering</a></li><li class="chapter-item expanded "><a href="enum-number.html"><strong aria-hidden="true">9.8.</strong> Serialize enum as number</a></li><li class="chapter-item expanded "><a href="attr-rename.html"><strong aria-hidden="true">9.9.</strong> Serialize fields as camelCase</a></li><li class="chapter-item expanded "><a href="attr-skip-serializing.html"><strong aria-hidden="true">9.10.</strong> Skip serializing field</a></li><li class="chapter-item expanded "><a href="remote-derive.html"><strong aria-hidden="true">9.11.</strong> Derive for remote crate</a></li><li class="chapter-item expanded "><a href="deserialize-struct.html"><strong aria-hidden="true">9.12.</strong> Manually deserialize struct</a></li><li class="chapter-item expanded "><a href="ignored-any.html"><strong aria-hidden="true">9.13.</strong> Discarding data</a></li><li class="chapter-item expanded "><a href="transcode.html"><strong aria-hidden="true">9.14.</strong> Transcode into another format</a></li><li class="chapter-item expanded "><a href="string-or-struct.html"><strong aria-hidden="true">9.15.</strong> Either string or struct</a></li><li class="chapter-item expanded "><a href="convert-error.html"><strong aria-hidden="true">9.16.</strong> Convert error types</a></li><li class="chapter-item expanded "><a href="custom-date-format.html"><strong aria-hidden="true">9.17.</strong> Custom date format</a></li></ol></li><li class="chapter-item expanded "><a href="no-std.html"><strong aria-hidden="true">10.</strong> No-std support</a></li><li class="chapter-item expanded "><a href="feature-flags.html"><strong aria-hidden="true">11.</strong> Feature flags</a></li></ol>            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu (default)</button></li>
+                        </ul>
+                                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                                            </div>
+
+                    <h1 class="menu-title">serde-rs 入门文档</h1>
+
+                    <div class="right-buttons">
+                                                                        <a href="https://github.com/zjp-CN/serde-rs-book" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                                                
+                    </div>
+                </div>
+
+                                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <h1 id="understanding-deserializer-lifetimes"><a class="header" href="#understanding-deserializer-lifetimes">Understanding deserializer lifetimes</a></h1>
+<p>The <a href="https://docs.serde.rs/serde/trait.Deserialize.html"><code>Deserialize</code></a> and <a href="https://docs.serde.rs/serde/trait.Deserializer.html"><code>Deserializer</code></a> traits both have a lifetime called
+<code>'de</code>, as do some of the other deserialization-related traits.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">use serde::Deserializer;
+</span><span class="boring">
+</span>trait Deserialize&lt;'de&gt;: Sized {
+    fn deserialize&lt;D&gt;(deserializer: D) -&gt; Result&lt;Self, D::Error&gt;
+    where
+        D: Deserializer&lt;'de&gt;;
+}
+<span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre></pre>
+<p>This lifetime is what enables Serde to safely perform efficient zero-copy
+deserialization across a variety of data formats, something that would be
+impossible or recklessly unsafe in languages other than Rust.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(dead_code)]
+</span><span class="boring">
+</span><span class="boring">use serde::Deserialize;
+</span><span class="boring">
+</span>#[derive(Deserialize)]
+struct User&lt;'a&gt; {
+    id: u32,
+    name: &amp;'a str,
+    screen_name: &amp;'a str,
+    location: &amp;'a str,
+}
+<span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre></pre>
+<p>Zero-copy deserialization means deserializing into a data structure, like the
+<code>User</code> struct above, that borrows string or byte array data from the string or
+byte array holding the input. This avoids allocating memory to store a string
+for each individual field and then copying string data out of the input over to
+the newly allocated field. Rust guarantees that the input data outlives the
+period during which the output data structure is in scope, meaning it is
+impossible to have dangling pointer errors as a result of losing the input data
+while the output data structure still refers to it.</p>
+<h2 id="trait-bounds"><a class="header" href="#trait-bounds">Trait bounds</a></h2>
+<p>There are two main ways to write <code>Deserialize</code> trait bounds, whether on an impl
+block or a function or anywhere else.</p>
+<ul>
+<li>
+<p><strong><code>&lt;'de, T&gt; where T: Deserialize&lt;'de&gt;</code></strong></p>
+<p>This means &quot;T can be deserialized from <strong>some</strong> lifetime.&quot; The caller gets
+to decide what lifetime that is. Typically this is used when the caller also
+provides the data that is being deserialized from, for example in a function
+like <a href="https://docs.serde.rs/serde_json/fn.from_str.html"><code>serde_json::from_str</code></a>. In that case the input data must also have
+lifetime <code>'de</code>, for example it could be <code>&amp;'de str</code>.</p>
+</li>
+<li>
+<p><strong><code>&lt;T&gt; where T: DeserializeOwned</code></strong></p>
+<p>This means &quot;T can be deserialized from <strong>any</strong> lifetime.&quot; The callee gets to
+decide what lifetime. Usually this is because the data that is being
+deserialized from is going to be thrown away before the function returns, so
+T must not be allowed to borrow from it. For example a function that accepts
+base64-encoded data as input, decodes it from base64, deserializes a value
+of type T, then throws away the result of base64 decoding. Another common
+use of this bound is functions that deserialize from an IO stream, such as
+<a href="https://docs.serde.rs/serde_json/fn.from_reader.html"><code>serde_json::from_reader</code></a>.</p>
+<p>To say it more technically, the <a href="https://docs.serde.rs/serde/de/trait.DeserializeOwned.html"><code>DeserializeOwned</code></a> trait is equivalent to
+the <a href="https://doc.rust-lang.org/nomicon/hrtb.html">higher-rank trait bound</a> <code>for&lt;'de&gt; Deserialize&lt;'de&gt;</code>. The only
+difference is <code>DeserializeOwned</code> is more intuitive to read. It means T owns
+all the data that gets deserialized.</p>
+</li>
+</ul>
+<p>Note that <code>&lt;T&gt; where T: Deserialize&lt;'static&gt;</code> is never what you want. Also
+<code>Deserialize&lt;'de&gt; + 'static</code> is never what you want. Generally writing <code>'static</code>
+anywhere near <code>Deserialize</code> is a sign of being on the wrong track. Use one of
+the above bounds instead.</p>
+<h2 id="transient-borrowed-and-owned-data"><a class="header" href="#transient-borrowed-and-owned-data">Transient, borrowed, and owned data</a></h2>
+<p>The Serde data model has three flavors of strings and byte arrays during
+deserialization. They correspond to different methods on the <a href="https://docs.serde.rs/serde/de/trait.Visitor.html"><code>Visitor</code></a> trait.</p>
+<ul>
+<li><strong>Transient</strong> — <a href="https://docs.serde.rs/serde/de/trait.Visitor.html#method.visit_str"><code>visit_str</code></a> accepts a <code>&amp;str</code>.</li>
+<li><strong>Borrowed</strong> — <a href="https://docs.serde.rs/serde/de/trait.Visitor.html#method.visit_borrowed_str"><code>visit_borrowed_str</code></a> accepts a <code>&amp;'de str</code>.</li>
+<li><strong>Owned</strong> — <a href="https://docs.serde.rs/serde/de/trait.Visitor.html#method.visit_string"><code>visit_string</code></a> accepts a <code>String</code>.</li>
+</ul>
+<p>Transient data is not guaranteed to last beyond the method call it is passed to.
+Often this is sufficient, for example when deserializing something like an IP
+address from a Serde string using the <a href="https://doc.rust-lang.org/std/str/trait.FromStr.html"><code>FromStr</code></a> trait. When it is not
+sufficient, the data can be copied by calling <a href="https://doc.rust-lang.org/std/borrow/trait.ToOwned.html"><code>to_owned()</code></a>. Deserializers
+commonly use transient data when input from an IO stream is being buffered in
+memory before being passed to the <code>Visitor</code>, or when escape sequences are being
+processed so the resulting string is not present verbatim in the input.</p>
+<p>Borrowed data is guaranteed to live at least as long as the <code>'de</code> lifetime
+parameter of the <code>Deserializer</code>. Not all deserializers support handing out
+borrowed data. For example when deserializing from an IO stream no data can be
+borrowed.</p>
+<p>Owned data is guaranteed to live as long as the <a href="https://docs.serde.rs/serde/de/trait.Visitor.html"><code>Visitor</code></a> wants it to. Some
+visitors benefit from receiving owned data. For example the <code>Deserialize</code> impl
+for Rust's <code>String</code> type benefits from being given ownership of the Serde string
+data that has been deserialized.</p>
+<h2 id="the-deserializede-lifetime"><a class="header" href="#the-deserializede-lifetime">The Deserialize&lt;'de&gt; lifetime</a></h2>
+<p>This lifetime records the constraints on how long data borrowed by this type
+must be valid.</p>
+<p>Every lifetime of data borrowed by this type must be a bound on the <code>'de</code>
+lifetime of its <code>Deserialize</code> impl. If this type borrows data with lifetime
+<code>'a</code>, then <code>'de</code> must be constrained to outlive <code>'a</code>.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(dead_code)]
+</span><span class="boring">
+</span><span class="boring">trait Deserialize&lt;'de&gt; {}
+</span><span class="boring">
+</span>struct S&lt;'a, 'b, T&gt; {
+    a: &amp;'a str,
+    b: &amp;'b str,
+    bb: &amp;'b str,
+    t: T,
+}
+
+impl&lt;'de: 'a + 'b, 'a, 'b, T&gt; Deserialize&lt;'de&gt; for S&lt;'a, 'b, T&gt;
+where
+    T: Deserialize&lt;'de&gt;,
+{
+    /* ... */
+}
+<span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre></pre>
+<p>If this type does not borrow any data from the <code>Deserializer</code>, there are simply
+no bounds on the <code>'de</code> lifetime. Such types automatically implement the
+<a href="https://docs.serde.rs/serde/de/trait.DeserializeOwned.html"><code>DeserializeOwned</code></a> trait.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(dead_code)]
+</span><span class="boring">
+</span><span class="boring">pub trait Deserialize&lt;'de&gt; {}
+</span><span class="boring">
+</span>struct S {
+    owned: String,
+}
+
+impl&lt;'de&gt; Deserialize&lt;'de&gt; for S {
+    /* ... */
+}
+<span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre></pre>
+<p>The <code>'de</code> lifetime <strong>should not</strong> appear in the type to which the <code>Deserialize</code>
+impl applies.</p>
+<pre><code class="language-diff">- // Do not do this. Sooner or later you will be sad.
+- impl&lt;'de&gt; Deserialize&lt;'de&gt; for Q&lt;'de&gt; {
+
++ // Do this instead.
++ impl&lt;'de: 'a, 'a&gt; Deserialize&lt;'de&gt; for Q&lt;'a&gt; {
+</code></pre>
+<h2 id="the-deserializerde-lifetime"><a class="header" href="#the-deserializerde-lifetime">The Deserializer&lt;'de&gt; lifetime</a></h2>
+<p>This is the lifetime of data that can be borrowed from the <code>Deserializer</code>.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(dead_code)]
+</span><span class="boring">
+</span><span class="boring">pub trait Deserializer&lt;'de&gt; {}
+</span><span class="boring">
+</span>struct MyDeserializer&lt;'de&gt; {
+    input_data: &amp;'de [u8],
+    pos: usize,
+}
+
+impl&lt;'de&gt; Deserializer&lt;'de&gt; for MyDeserializer&lt;'de&gt; {
+    /* ... */
+}
+<span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre></pre>
+<p>If the <code>Deserializer</code> never invokes <a href="https://docs.serde.rs/serde/de/trait.Visitor.html#method.visit_borrowed_str"><code>visit_borrowed_str</code></a> or
+<a href="https://docs.serde.rs/serde/de/trait.Visitor.html#method.visit_borrowed_bytes"><code>visit_borrowed_bytes</code></a>, the <code>'de</code> lifetime will be an unconstrained lifetime
+parameter.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(dead_code)]
+</span><span class="boring">
+</span><span class="boring">use std::io;
+</span><span class="boring">
+</span><span class="boring">pub trait Deserializer&lt;'de&gt; {}
+</span><span class="boring">
+</span>struct MyDeserializer&lt;R&gt; {
+    read: R,
+}
+
+impl&lt;'de, R&gt; Deserializer&lt;'de&gt; for MyDeserializer&lt;R&gt;
+where
+    R: io::Read,
+{
+    /* ... */
+}
+<span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre></pre>
+<h2 id="borrowing-data-in-a-derived-impl"><a class="header" href="#borrowing-data-in-a-derived-impl">Borrowing data in a derived impl</a></h2>
+<p>Fields of type <code>&amp;str</code> and <code>&amp;[u8]</code> are implicitly borrowed from the input data by
+Serde. Any other type of field can opt in to borrowing by using the
+<code>#[serde(borrow)]</code> attribute.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(dead_code)]
+</span><span class="boring">
+</span>use serde::Deserialize;
+
+use std::borrow::Cow;
+
+#[derive(Deserialize)]
+struct Inner&lt;'a, 'b&gt; {
+    // &amp;str and &amp;[u8] are implicitly borrowed.
+    username: &amp;'a str,
+
+    // Other types must be borrowed explicitly.
+    #[serde(borrow)]
+    comment: Cow&lt;'b, str&gt;,
+}
+
+#[derive(Deserialize)]
+struct Outer&lt;'a, 'b, 'c&gt; {
+    owned: String,
+
+    #[serde(borrow)]
+    inner: Inner&lt;'a, 'b&gt;,
+
+    // This field is never borrowed.
+    not_borrowed: Cow&lt;'c, str&gt;,
+}
+<span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre></pre>
+<p>This attribute works by placing bounds on the <code>'de</code> lifetime of the generated
+<code>Deserialize</code> impl. For example the impl for the struct <code>Outer</code> defined above
+looks like this:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(dead_code)]
+</span><span class="boring">
+</span><span class="boring">use std::borrow::Cow;
+</span><span class="boring">
+</span><span class="boring">trait Deserialize&lt;'de&gt; {}
+</span><span class="boring">
+</span><span class="boring">struct Inner&lt;'a, 'b&gt; {
+</span><span class="boring">    username: &amp;'a str,
+</span><span class="boring">    comment: Cow&lt;'b, str&gt;,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">struct Outer&lt;'a, 'b, 'c&gt; {
+</span><span class="boring">    owned: String,
+</span><span class="boring">    inner: Inner&lt;'a, 'b&gt;,
+</span><span class="boring">    not_borrowed: Cow&lt;'c, str&gt;,
+</span><span class="boring">}
+</span><span class="boring">
+</span>// The lifetimes 'a and 'b are borrowed while 'c is not.
+impl&lt;'de: 'a + 'b, 'a, 'b, 'c&gt; Deserialize&lt;'de&gt; for Outer&lt;'a, 'b, 'c&gt; {
+    /* ... */
+}
+<span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre></pre>
+<p>The attribute may specify explicitly which lifetimes should be borrowed.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(dead_code)]
+</span><span class="boring">
+</span><span class="boring">use serde::Deserialize;
+</span><span class="boring">
+</span>use std::marker::PhantomData;
+
+// This struct borrows the first two lifetimes but not the third.
+#[derive(Deserialize)]
+struct Three&lt;'a, 'b, 'c&gt; {
+    a: &amp;'a str,
+    b: &amp;'b str,
+    c: PhantomData&lt;&amp;'c str&gt;,
+}
+
+#[derive(Deserialize)]
+struct Example&lt;'a, 'b, 'c&gt; {
+    // Borrow 'a and 'b only, not 'c.
+    #[serde(borrow = &quot;'a + 'b&quot;)]
+    three: Three&lt;'a, 'b, 'c&gt;,
+}
+<span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                                                    <a rel="prev" href="impl-deserializer.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+                                                    <a rel="next" href="examples.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                                    <a rel="prev" href="impl-deserializer.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+                                    <a rel="next" href="examples.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                            </nav>
+
+        </div>
+
+        
+        
+        
+                <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+                <script src="ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="editor.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mode-rust.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-dawn.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-tomorrow_night.js" type="text/javascript" charset="utf-8"></script>
+        
+                <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+                <script type="text/javascript" src="theme/pagetoc.js"></script>
+        
+        
+    </body>
+</html>

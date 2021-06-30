@@ -1,0 +1,1070 @@
+<!DOCTYPE HTML>
+<html lang="zh" class="sidebar-visible no-js ayu">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>实现 Deserializer - serde-rs 入门文档</title>
+                
+
+        <!-- Custom HTML head -->
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+                <link rel="icon" href="favicon.svg">
+                        <link rel="shortcut icon" href="favicon.png">
+                <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+                <link rel="stylesheet" href="fonts/fonts.css">
+        
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+                <link rel="stylesheet" href="theme/pagetoc.css">
+        
+            </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "ayu";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> 总览</a></li><li class="chapter-item expanded "><a href="help.html"><strong aria-hidden="true">2.</strong> 帮助说明</a></li><li class="chapter-item expanded "><a href="data-model.html"><strong aria-hidden="true">3.</strong> Serde 数据模型</a></li><li class="chapter-item expanded "><a href="derive.html"><strong aria-hidden="true">4.</strong> 使用 derive 宏</a></li><li class="chapter-item expanded "><a href="attributes.html"><strong aria-hidden="true">5.</strong> 属性</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="container-attrs.html"><strong aria-hidden="true">5.1.</strong> container 属性</a></li><li class="chapter-item expanded "><a href="variant-attrs.html"><strong aria-hidden="true">5.2.</strong> variant 属性</a></li><li class="chapter-item expanded "><a href="field-attrs.html"><strong aria-hidden="true">5.3.</strong> field 属性</a></li></ol></li><li class="chapter-item expanded "><a href="custom-serialization.html"><strong aria-hidden="true">6.</strong> 自定义序列化</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="impl-serialize.html"><strong aria-hidden="true">6.1.</strong> 实现 Serialize</a></li><li class="chapter-item expanded "><a href="impl-deserialize.html"><strong aria-hidden="true">6.2.</strong> 实现 Deserialize</a></li><li class="chapter-item expanded "><a href="unit-testing.html"><strong aria-hidden="true">6.3.</strong> 单元测试</a></li></ol></li><li class="chapter-item expanded "><a href="data-format.html"><strong aria-hidden="true">7.</strong> 手写数据格式</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="conventions.html"><strong aria-hidden="true">7.1.</strong> 惯例</a></li><li class="chapter-item expanded "><a href="error-handling.html"><strong aria-hidden="true">7.2.</strong> 错误处理</a></li><li class="chapter-item expanded "><a href="impl-serializer.html"><strong aria-hidden="true">7.3.</strong> 实现 Serializer</a></li><li class="chapter-item expanded "><a href="impl-deserializer.html" class="active"><strong aria-hidden="true">7.4.</strong> 实现 Deserializer</a></li></ol></li><li class="chapter-item expanded "><a href="lifetimes.html"><strong aria-hidden="true">8.</strong> Deserializer lifetimes</a></li><li class="chapter-item expanded "><a href="examples.html"><strong aria-hidden="true">9.</strong> 例子</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="json.html"><strong aria-hidden="true">9.1.</strong> JSON 与结构体/枚举体</a></li><li class="chapter-item expanded "><a href="enum-representations.html"><strong aria-hidden="true">9.2.</strong> 用于枚举体</a></li><li class="chapter-item expanded "><a href="attr-default.html"><strong aria-hidden="true">9.3.</strong> 给字段设置默认值</a></li><li class="chapter-item expanded "><a href="attr-flatten.html"><strong aria-hidden="true">9.4.</strong> 结构体展平</a></li><li class="chapter-item expanded "><a href="attr-bound.html"><strong aria-hidden="true">9.5.</strong> 手写泛型 bounds</a></li><li class="chapter-item expanded "><a href="deserialize-map.html"><strong aria-hidden="true">9.6.</strong> Deserialize for custom map type</a></li><li class="chapter-item expanded "><a href="stream-array.html"><strong aria-hidden="true">9.7.</strong> Array of values without buffering</a></li><li class="chapter-item expanded "><a href="enum-number.html"><strong aria-hidden="true">9.8.</strong> Serialize enum as number</a></li><li class="chapter-item expanded "><a href="attr-rename.html"><strong aria-hidden="true">9.9.</strong> Serialize fields as camelCase</a></li><li class="chapter-item expanded "><a href="attr-skip-serializing.html"><strong aria-hidden="true">9.10.</strong> Skip serializing field</a></li><li class="chapter-item expanded "><a href="remote-derive.html"><strong aria-hidden="true">9.11.</strong> Derive for remote crate</a></li><li class="chapter-item expanded "><a href="deserialize-struct.html"><strong aria-hidden="true">9.12.</strong> Manually deserialize struct</a></li><li class="chapter-item expanded "><a href="ignored-any.html"><strong aria-hidden="true">9.13.</strong> Discarding data</a></li><li class="chapter-item expanded "><a href="transcode.html"><strong aria-hidden="true">9.14.</strong> Transcode into another format</a></li><li class="chapter-item expanded "><a href="string-or-struct.html"><strong aria-hidden="true">9.15.</strong> Either string or struct</a></li><li class="chapter-item expanded "><a href="convert-error.html"><strong aria-hidden="true">9.16.</strong> Convert error types</a></li><li class="chapter-item expanded "><a href="custom-date-format.html"><strong aria-hidden="true">9.17.</strong> Custom date format</a></li></ol></li><li class="chapter-item expanded "><a href="no-std.html"><strong aria-hidden="true">10.</strong> No-std support</a></li><li class="chapter-item expanded "><a href="feature-flags.html"><strong aria-hidden="true">11.</strong> Feature flags</a></li></ol>            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu (default)</button></li>
+                        </ul>
+                                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                                            </div>
+
+                    <h1 class="menu-title">serde-rs 入门文档</h1>
+
+                    <div class="right-buttons">
+                                                                        <a href="https://github.com/zjp-CN/serde-rs-book" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                                                
+                    </div>
+                </div>
+
+                                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <h1 id="implementing-a-deserializer"><a class="header" href="#implementing-a-deserializer">Implementing a Deserializer</a></h1>
+<p>This page gives a basic but functional implementation of a JSON deserializer
+using Serde.</p>
+<p>As with the serializer, the <a href="https://docs.serde.rs/serde/de/trait.Deserializer.html"><code>Deserializer</code></a> trait has a lot of methods but none
+of them are complicated in this implementation. The deserializer is responsible
+for mapping the input data into <a href="data-model.html">Serde's data model</a> by invoking exactly one of
+the methods on the <a href="https://docs.serde.rs/serde/de/trait.Visitor.html"><code>Visitor</code></a> that it receives.</p>
+<p>The <code>Deserializer</code> methods are called by a <code>Deserialize</code> impl as a hint to
+indicate what Serde data model type the <code>Deserialize</code> type expects to see in the
+input. For self-describing formats like JSON, it is fine for the <code>Deserializer</code>
+to ignore this hint and just call whichever <code>Visitor</code> method corresponds to the
+content of the input data. Other formats, especially compact binary formats like
+Bincode, rely on the hint to determine how the input data is to be interpreted.</p>
+<p>Self-describing formats can save a lot of code by using the
+<a href="https://docs.serde.rs/serde/macro.forward_to_deserialize_any.html"><code>forward_to_deserialize_any!</code></a> macro to ignore hints and forward some or all of
+the methods of the <code>Deserializer</code> trait to the <code>deserialize_any</code> method.</p>
+<p>The code below implements every method explicitly for documentation purposes but
+there is no advantage to that.</p>
+<p><a href="lifetimes.html">Deserializer lifetimes</a> have their own dedicated page.</p>
+<p>!FILENAME src/de.rs</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">mod error {
+</span><span class="boring">    use std;
+</span><span class="boring">    use std::fmt::{self, Display};
+</span><span class="boring">
+</span><span class="boring">    use serde::{ser, de};
+</span><span class="boring">
+</span><span class="boring">    pub type Result&lt;T&gt; = ::std::result::Result&lt;T, Error&gt;;
+</span><span class="boring">
+</span><span class="boring">    #[derive(Clone, Debug, PartialEq)]
+</span><span class="boring">    pub enum Error {
+</span><span class="boring">        Message(String),
+</span><span class="boring">        Eof,
+</span><span class="boring">        Syntax,
+</span><span class="boring">        ExpectedBoolean,
+</span><span class="boring">        ExpectedInteger,
+</span><span class="boring">        ExpectedString,
+</span><span class="boring">        ExpectedNull,
+</span><span class="boring">        ExpectedArray,
+</span><span class="boring">        ExpectedArrayComma,
+</span><span class="boring">        ExpectedArrayEnd,
+</span><span class="boring">        ExpectedMap,
+</span><span class="boring">        ExpectedMapColon,
+</span><span class="boring">        ExpectedMapComma,
+</span><span class="boring">        ExpectedMapEnd,
+</span><span class="boring">        ExpectedEnum,
+</span><span class="boring">        TrailingCharacters,
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    impl ser::Error for Error {
+</span><span class="boring">        fn custom&lt;T: Display&gt;(msg: T) -&gt; Self {
+</span><span class="boring">            Error::Message(msg.to_string())
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    impl de::Error for Error {
+</span><span class="boring">        fn custom&lt;T: Display&gt;(msg: T) -&gt; Self {
+</span><span class="boring">            Error::Message(msg.to_string())
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    impl Display for Error {
+</span><span class="boring">        fn fmt(&amp;self, formatter: &amp;mut fmt::Formatter) -&gt; fmt::Result {
+</span><span class="boring">            match self {
+</span><span class="boring">                Error::Message(msg) =&gt; formatter.write_str(msg),
+</span><span class="boring">                Error::Eof =&gt; formatter.write_str(&quot;unexpected end of input&quot;),
+</span><span class="boring">                /* and so forth */
+</span><span class="boring">                _ =&gt; unimplemented!(),
+</span><span class="boring">            }
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    impl std::error::Error for Error {}
+</span><span class="boring">}
+</span><span class="boring">
+</span>use std::ops::{AddAssign, MulAssign, Neg};
+
+use serde::Deserialize;
+use serde::de::{
+    self, DeserializeSeed, EnumAccess, IntoDeserializer, MapAccess, SeqAccess,
+    VariantAccess, Visitor,
+};
+
+use error::{Error, Result};
+
+pub struct Deserializer&lt;'de&gt; {
+    // This string starts with the input data and characters are truncated off
+    // the beginning as data is parsed.
+    input: &amp;'de str,
+}
+
+impl&lt;'de&gt; Deserializer&lt;'de&gt; {
+    // By convention, `Deserializer` constructors are named like `from_xyz`.
+    // That way basic use cases are satisfied by something like
+    // `serde_json::from_str(...)` while advanced use cases that require a
+    // deserializer can make one with `serde_json::Deserializer::from_str(...)`.
+    pub fn from_str(input: &amp;'de str) -&gt; Self {
+        Deserializer { input }
+    }
+}
+
+// By convention, the public API of a Serde deserializer is one or more
+// `from_xyz` methods such as `from_str`, `from_bytes`, or `from_reader`
+// depending on what Rust types the deserializer is able to consume as input.
+//
+// This basic deserializer supports only `from_str`.
+pub fn from_str&lt;'a, T&gt;(s: &amp;'a str) -&gt; Result&lt;T&gt;
+where
+    T: Deserialize&lt;'a&gt;,
+{
+    let mut deserializer = Deserializer::from_str(s);
+    let t = T::deserialize(&amp;mut deserializer)?;
+    if deserializer.input.is_empty() {
+        Ok(t)
+    } else {
+        Err(Error::TrailingCharacters)
+    }
+}
+
+// SERDE IS NOT A PARSING LIBRARY. This impl block defines a few basic parsing
+// functions from scratch. More complicated formats may wish to use a dedicated
+// parsing library to help implement their Serde deserializer.
+impl&lt;'de&gt; Deserializer&lt;'de&gt; {
+    // Look at the first character in the input without consuming it.
+    fn peek_char(&amp;mut self) -&gt; Result&lt;char&gt; {
+        self.input.chars().next().ok_or(Error::Eof)
+    }
+
+    // Consume the first character in the input.
+    fn next_char(&amp;mut self) -&gt; Result&lt;char&gt; {
+        let ch = self.peek_char()?;
+        self.input = &amp;self.input[ch.len_utf8()..];
+        Ok(ch)
+    }
+
+    // Parse the JSON identifier `true` or `false`.
+    fn parse_bool(&amp;mut self) -&gt; Result&lt;bool&gt; {
+        if self.input.starts_with(&quot;true&quot;) {
+            self.input = &amp;self.input[&quot;true&quot;.len()..];
+            Ok(true)
+        } else if self.input.starts_with(&quot;false&quot;) {
+            self.input = &amp;self.input[&quot;false&quot;.len()..];
+            Ok(false)
+        } else {
+            Err(Error::ExpectedBoolean)
+        }
+    }
+
+    // Parse a group of decimal digits as an unsigned integer of type T.
+    //
+    // This implementation is a bit too lenient, for example `001` is not
+    // allowed in JSON. Also the various arithmetic operations can overflow and
+    // panic or return bogus data. But it is good enough for example code!
+    fn parse_unsigned&lt;T&gt;(&amp;mut self) -&gt; Result&lt;T&gt;
+    where
+        T: AddAssign&lt;T&gt; + MulAssign&lt;T&gt; + From&lt;u8&gt;,
+    {
+        let mut int = match self.next_char()? {
+            ch @ '0'..='9' =&gt; T::from(ch as u8 - b'0'),
+            _ =&gt; {
+                return Err(Error::ExpectedInteger);
+            }
+        };
+        loop {
+            match self.input.chars().next() {
+                Some(ch @ '0'..='9') =&gt; {
+                    self.input = &amp;self.input[1..];
+                    int *= T::from(10);
+                    int += T::from(ch as u8 - b'0');
+                }
+                _ =&gt; {
+                    return Ok(int);
+                }
+            }
+        }
+    }
+
+    // Parse a possible minus sign followed by a group of decimal digits as a
+    // signed integer of type T.
+    fn parse_signed&lt;T&gt;(&amp;mut self) -&gt; Result&lt;T&gt;
+    where
+        T: Neg&lt;Output = T&gt; + AddAssign&lt;T&gt; + MulAssign&lt;T&gt; + From&lt;i8&gt;,
+    {
+        // Optional minus sign, delegate to `parse_unsigned`, negate if negative.
+        unimplemented!()
+    }
+
+    // Parse a string until the next '&quot;' character.
+    //
+    // Makes no attempt to handle escape sequences. What did you expect? This is
+    // example code!
+    fn parse_string(&amp;mut self) -&gt; Result&lt;&amp;'de str&gt; {
+        if self.next_char()? != '&quot;' {
+            return Err(Error::ExpectedString);
+        }
+        match self.input.find('&quot;') {
+            Some(len) =&gt; {
+                let s = &amp;self.input[..len];
+                self.input = &amp;self.input[len + 1..];
+                Ok(s)
+            }
+            None =&gt; Err(Error::Eof),
+        }
+    }
+}
+
+impl&lt;'de, 'a&gt; de::Deserializer&lt;'de&gt; for &amp;'a mut Deserializer&lt;'de&gt; {
+    type Error = Error;
+
+    // Look at the input data to decide what Serde data model type to
+    // deserialize as. Not all data formats are able to support this operation.
+    // Formats that support `deserialize_any` are known as self-describing.
+    fn deserialize_any&lt;V&gt;(self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        match self.peek_char()? {
+            'n' =&gt; self.deserialize_unit(visitor),
+            't' | 'f' =&gt; self.deserialize_bool(visitor),
+            '&quot;' =&gt; self.deserialize_str(visitor),
+            '0'..='9' =&gt; self.deserialize_u64(visitor),
+            '-' =&gt; self.deserialize_i64(visitor),
+            '[' =&gt; self.deserialize_seq(visitor),
+            '{' =&gt; self.deserialize_map(visitor),
+            _ =&gt; Err(Error::Syntax),
+        }
+    }
+
+    // Uses the `parse_bool` parsing function defined above to read the JSON
+    // identifier `true` or `false` from the input.
+    //
+    // Parsing refers to looking at the input and deciding that it contains the
+    // JSON value `true` or `false`.
+    //
+    // Deserialization refers to mapping that JSON value into Serde's data
+    // model by invoking one of the `Visitor` methods. In the case of JSON and
+    // bool that mapping is straightforward so the distinction may seem silly,
+    // but in other cases Deserializers sometimes perform non-obvious mappings.
+    // For example the TOML format has a Datetime type and Serde's data model
+    // does not. In the `toml` crate, a Datetime in the input is deserialized by
+    // mapping it to a Serde data model &quot;struct&quot; type with a special name and a
+    // single field containing the Datetime represented as a string.
+    fn deserialize_bool&lt;V&gt;(self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        visitor.visit_bool(self.parse_bool()?)
+    }
+
+    // The `parse_signed` function is generic over the integer type `T` so here
+    // it is invoked with `T=i8`. The next 8 methods are similar.
+    fn deserialize_i8&lt;V&gt;(self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        visitor.visit_i8(self.parse_signed()?)
+    }
+
+    fn deserialize_i16&lt;V&gt;(self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        visitor.visit_i16(self.parse_signed()?)
+    }
+
+    fn deserialize_i32&lt;V&gt;(self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        visitor.visit_i32(self.parse_signed()?)
+    }
+
+    fn deserialize_i64&lt;V&gt;(self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        visitor.visit_i64(self.parse_signed()?)
+    }
+
+    fn deserialize_u8&lt;V&gt;(self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        visitor.visit_u8(self.parse_unsigned()?)
+    }
+
+    fn deserialize_u16&lt;V&gt;(self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        visitor.visit_u16(self.parse_unsigned()?)
+    }
+
+    fn deserialize_u32&lt;V&gt;(self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        visitor.visit_u32(self.parse_unsigned()?)
+    }
+
+    fn deserialize_u64&lt;V&gt;(self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        visitor.visit_u64(self.parse_unsigned()?)
+    }
+
+    // Float parsing is stupidly hard.
+    fn deserialize_f32&lt;V&gt;(self, _visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        unimplemented!()
+    }
+
+    // Float parsing is stupidly hard.
+    fn deserialize_f64&lt;V&gt;(self, _visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        unimplemented!()
+    }
+
+    // The `Serializer` implementation on the previous page serialized chars as
+    // single-character strings so handle that representation here.
+    fn deserialize_char&lt;V&gt;(self, _visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        // Parse a string, check that it is one character, call `visit_char`.
+        unimplemented!()
+    }
+
+    // Refer to the &quot;Understanding deserializer lifetimes&quot; page for information
+    // about the three deserialization flavors of strings in Serde.
+    fn deserialize_str&lt;V&gt;(self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        visitor.visit_borrowed_str(self.parse_string()?)
+    }
+
+    fn deserialize_string&lt;V&gt;(self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        self.deserialize_str(visitor)
+    }
+
+    // The `Serializer` implementation on the previous page serialized byte
+    // arrays as JSON arrays of bytes. Handle that representation here.
+    fn deserialize_bytes&lt;V&gt;(self, _visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        unimplemented!()
+    }
+
+    fn deserialize_byte_buf&lt;V&gt;(self, _visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        unimplemented!()
+    }
+
+    // An absent optional is represented as the JSON `null` and a present
+    // optional is represented as just the contained value.
+    //
+    // As commented in `Serializer` implementation, this is a lossy
+    // representation. For example the values `Some(())` and `None` both
+    // serialize as just `null`. Unfortunately this is typically what people
+    // expect when working with JSON. Other formats are encouraged to behave
+    // more intelligently if possible.
+    fn deserialize_option&lt;V&gt;(self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        if self.input.starts_with(&quot;null&quot;) {
+            self.input = &amp;self.input[&quot;null&quot;.len()..];
+            visitor.visit_none()
+        } else {
+            visitor.visit_some(self)
+        }
+    }
+
+    // In Serde, unit means an anonymous value containing no data.
+    fn deserialize_unit&lt;V&gt;(self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        if self.input.starts_with(&quot;null&quot;) {
+            self.input = &amp;self.input[&quot;null&quot;.len()..];
+            visitor.visit_unit()
+        } else {
+            Err(Error::ExpectedNull)
+        }
+    }
+
+    // Unit struct means a named value containing no data.
+    fn deserialize_unit_struct&lt;V&gt;(
+        self,
+        _name: &amp;'static str,
+        visitor: V,
+    ) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        self.deserialize_unit(visitor)
+    }
+
+    // As is done here, serializers are encouraged to treat newtype structs as
+    // insignificant wrappers around the data they contain. That means not
+    // parsing anything other than the contained value.
+    fn deserialize_newtype_struct&lt;V&gt;(
+        self,
+        _name: &amp;'static str,
+        visitor: V,
+    ) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        visitor.visit_newtype_struct(self)
+    }
+
+    // Deserialization of compound types like sequences and maps happens by
+    // passing the visitor an &quot;Access&quot; object that gives it the ability to
+    // iterate through the data contained in the sequence.
+    fn deserialize_seq&lt;V&gt;(mut self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        // Parse the opening bracket of the sequence.
+        if self.next_char()? == '[' {
+            // Give the visitor access to each element of the sequence.
+            let value = visitor.visit_seq(CommaSeparated::new(&amp;mut self))?;
+            // Parse the closing bracket of the sequence.
+            if self.next_char()? == ']' {
+                Ok(value)
+            } else {
+                Err(Error::ExpectedArrayEnd)
+            }
+        } else {
+            Err(Error::ExpectedArray)
+        }
+    }
+
+    // Tuples look just like sequences in JSON. Some formats may be able to
+    // represent tuples more efficiently.
+    //
+    // As indicated by the length parameter, the `Deserialize` implementation
+    // for a tuple in the Serde data model is required to know the length of the
+    // tuple before even looking at the input data.
+    fn deserialize_tuple&lt;V&gt;(self, _len: usize, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        self.deserialize_seq(visitor)
+    }
+
+    // Tuple structs look just like sequences in JSON.
+    fn deserialize_tuple_struct&lt;V&gt;(
+        self,
+        _name: &amp;'static str,
+        _len: usize,
+        visitor: V,
+    ) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        self.deserialize_seq(visitor)
+    }
+
+    // Much like `deserialize_seq` but calls the visitors `visit_map` method
+    // with a `MapAccess` implementation, rather than the visitor's `visit_seq`
+    // method with a `SeqAccess` implementation.
+    fn deserialize_map&lt;V&gt;(mut self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        // Parse the opening brace of the map.
+        if self.next_char()? == '{' {
+            // Give the visitor access to each entry of the map.
+            let value = visitor.visit_map(CommaSeparated::new(&amp;mut self))?;
+            // Parse the closing brace of the map.
+            if self.next_char()? == '}' {
+                Ok(value)
+            } else {
+                Err(Error::ExpectedMapEnd)
+            }
+        } else {
+            Err(Error::ExpectedMap)
+        }
+    }
+
+    // Structs look just like maps in JSON.
+    //
+    // Notice the `fields` parameter - a &quot;struct&quot; in the Serde data model means
+    // that the `Deserialize` implementation is required to know what the fields
+    // are before even looking at the input data. Any key-value pairing in which
+    // the fields cannot be known ahead of time is probably a map.
+    fn deserialize_struct&lt;V&gt;(
+        self,
+        _name: &amp;'static str,
+        _fields: &amp;'static [&amp;'static str],
+        visitor: V,
+    ) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        self.deserialize_map(visitor)
+    }
+
+    fn deserialize_enum&lt;V&gt;(
+        self,
+        _name: &amp;'static str,
+        _variants: &amp;'static [&amp;'static str],
+        visitor: V,
+    ) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        if self.peek_char()? == '&quot;' {
+            // Visit a unit variant.
+            visitor.visit_enum(self.parse_string()?.into_deserializer())
+        } else if self.next_char()? == '{' {
+            // Visit a newtype variant, tuple variant, or struct variant.
+            let value = visitor.visit_enum(Enum::new(self))?;
+            // Parse the matching close brace.
+            if self.next_char()? == '}' {
+                Ok(value)
+            } else {
+                Err(Error::ExpectedMapEnd)
+            }
+        } else {
+            Err(Error::ExpectedEnum)
+        }
+    }
+
+    // An identifier in Serde is the type that identifies a field of a struct or
+    // the variant of an enum. In JSON, struct fields and enum variants are
+    // represented as strings. In other formats they may be represented as
+    // numeric indices.
+    fn deserialize_identifier&lt;V&gt;(self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        self.deserialize_str(visitor)
+    }
+
+    // Like `deserialize_any` but indicates to the `Deserializer` that it makes
+    // no difference which `Visitor` method is called because the data is
+    // ignored.
+    //
+    // Some deserializers are able to implement this more efficiently than
+    // `deserialize_any`, for example by rapidly skipping over matched
+    // delimiters without paying close attention to the data in between.
+    //
+    // Some formats are not able to implement this at all. Formats that can
+    // implement `deserialize_any` and `deserialize_ignored_any` are known as
+    // self-describing.
+    fn deserialize_ignored_any&lt;V&gt;(self, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        self.deserialize_any(visitor)
+    }
+}
+
+// In order to handle commas correctly when deserializing a JSON array or map,
+// we need to track whether we are on the first element or past the first
+// element.
+struct CommaSeparated&lt;'a, 'de: 'a&gt; {
+    de: &amp;'a mut Deserializer&lt;'de&gt;,
+    first: bool,
+}
+
+impl&lt;'a, 'de&gt; CommaSeparated&lt;'a, 'de&gt; {
+    fn new(de: &amp;'a mut Deserializer&lt;'de&gt;) -&gt; Self {
+        CommaSeparated {
+            de,
+            first: true,
+        }
+    }
+}
+
+// `SeqAccess` is provided to the `Visitor` to give it the ability to iterate
+// through elements of the sequence.
+impl&lt;'de, 'a&gt; SeqAccess&lt;'de&gt; for CommaSeparated&lt;'a, 'de&gt; {
+    type Error = Error;
+
+    fn next_element_seed&lt;T&gt;(&amp;mut self, seed: T) -&gt; Result&lt;Option&lt;T::Value&gt;&gt;
+    where
+        T: DeserializeSeed&lt;'de&gt;,
+    {
+        // Check if there are no more elements.
+        if self.de.peek_char()? == ']' {
+            return Ok(None);
+        }
+        // Comma is required before every element except the first.
+        if !self.first &amp;&amp; self.de.next_char()? != ',' {
+            return Err(Error::ExpectedArrayComma);
+        }
+        self.first = false;
+        // Deserialize an array element.
+        seed.deserialize(&amp;mut *self.de).map(Some)
+    }
+}
+
+// `MapAccess` is provided to the `Visitor` to give it the ability to iterate
+// through entries of the map.
+impl&lt;'de, 'a&gt; MapAccess&lt;'de&gt; for CommaSeparated&lt;'a, 'de&gt; {
+    type Error = Error;
+
+    fn next_key_seed&lt;K&gt;(&amp;mut self, seed: K) -&gt; Result&lt;Option&lt;K::Value&gt;&gt;
+    where
+        K: DeserializeSeed&lt;'de&gt;,
+    {
+        // Check if there are no more entries.
+        if self.de.peek_char()? == '}' {
+            return Ok(None);
+        }
+        // Comma is required before every entry except the first.
+        if !self.first &amp;&amp; self.de.next_char()? != ',' {
+            return Err(Error::ExpectedMapComma);
+        }
+        self.first = false;
+        // Deserialize a map key.
+        seed.deserialize(&amp;mut *self.de).map(Some)
+    }
+
+    fn next_value_seed&lt;V&gt;(&amp;mut self, seed: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: DeserializeSeed&lt;'de&gt;,
+    {
+        // It doesn't make a difference whether the colon is parsed at the end
+        // of `next_key_seed` or at the beginning of `next_value_seed`. In this
+        // case the code is a bit simpler having it here.
+        if self.de.next_char()? != ':' {
+            return Err(Error::ExpectedMapColon);
+        }
+        // Deserialize a map value.
+        seed.deserialize(&amp;mut *self.de)
+    }
+}
+
+struct Enum&lt;'a, 'de: 'a&gt; {
+    de: &amp;'a mut Deserializer&lt;'de&gt;,
+}
+
+impl&lt;'a, 'de&gt; Enum&lt;'a, 'de&gt; {
+    fn new(de: &amp;'a mut Deserializer&lt;'de&gt;) -&gt; Self {
+        Enum { de }
+    }
+}
+
+// `EnumAccess` is provided to the `Visitor` to give it the ability to determine
+// which variant of the enum is supposed to be deserialized.
+//
+// Note that all enum deserialization methods in Serde refer exclusively to the
+// &quot;externally tagged&quot; enum representation.
+impl&lt;'de, 'a&gt; EnumAccess&lt;'de&gt; for Enum&lt;'a, 'de&gt; {
+    type Error = Error;
+    type Variant = Self;
+
+    fn variant_seed&lt;V&gt;(self, seed: V) -&gt; Result&lt;(V::Value, Self::Variant)&gt;
+    where
+        V: DeserializeSeed&lt;'de&gt;,
+    {
+        // The `deserialize_enum` method parsed a `{` character so we are
+        // currently inside of a map. The seed will be deserializing itself from
+        // the key of the map.
+        let val = seed.deserialize(&amp;mut *self.de)?;
+        // Parse the colon separating map key from value.
+        if self.de.next_char()? == ':' {
+            Ok((val, self))
+        } else {
+            Err(Error::ExpectedMapColon)
+        }
+    }
+}
+
+// `VariantAccess` is provided to the `Visitor` to give it the ability to see
+// the content of the single variant that it decided to deserialize.
+impl&lt;'de, 'a&gt; VariantAccess&lt;'de&gt; for Enum&lt;'a, 'de&gt; {
+    type Error = Error;
+
+    // If the `Visitor` expected this variant to be a unit variant, the input
+    // should have been the plain string case handled in `deserialize_enum`.
+    fn unit_variant(self) -&gt; Result&lt;()&gt; {
+        Err(Error::ExpectedString)
+    }
+
+    // Newtype variants are represented in JSON as `{ NAME: VALUE }` so
+    // deserialize the value here.
+    fn newtype_variant_seed&lt;T&gt;(self, seed: T) -&gt; Result&lt;T::Value&gt;
+    where
+        T: DeserializeSeed&lt;'de&gt;,
+    {
+        seed.deserialize(self.de)
+    }
+
+    // Tuple variants are represented in JSON as `{ NAME: [DATA...] }` so
+    // deserialize the sequence of data here.
+    fn tuple_variant&lt;V&gt;(self, _len: usize, visitor: V) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        de::Deserializer::deserialize_seq(self.de, visitor)
+    }
+
+    // Struct variants are represented in JSON as `{ NAME: { K: V, ... } }` so
+    // deserialize the inner map here.
+    fn struct_variant&lt;V&gt;(
+        self,
+        _fields: &amp;'static [&amp;'static str],
+        visitor: V,
+    ) -&gt; Result&lt;V::Value&gt;
+    where
+        V: Visitor&lt;'de&gt;,
+    {
+        de::Deserializer::deserialize_map(self.de, visitor)
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+<span class="boring">macro_rules! not_actually_test {
+</span><span class="boring">    ($(#[test] $test:item)+) =&gt; {
+</span><span class="boring">        $($test)+
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">not_actually_test! {
+</span>#[test]
+fn test_struct() {
+    #[derive(Deserialize, PartialEq, Debug)]
+    struct Test {
+        int: u32,
+        seq: Vec&lt;String&gt;,
+    }
+
+    let j = r#&quot;{&quot;int&quot;:1,&quot;seq&quot;:[&quot;a&quot;,&quot;b&quot;]}&quot;#;
+    let expected = Test {
+        int: 1,
+        seq: vec![&quot;a&quot;.to_owned(), &quot;b&quot;.to_owned()],
+    };
+    assert_eq!(expected, from_str(j).unwrap());
+}
+
+#[test]
+fn test_enum() {
+    #[derive(Deserialize, PartialEq, Debug)]
+    enum E {
+        Unit,
+        Newtype(u32),
+        Tuple(u32, u32),
+        Struct { a: u32 },
+    }
+
+    let j = r#&quot;&quot;Unit&quot;&quot;#;
+    let expected = E::Unit;
+    assert_eq!(expected, from_str(j).unwrap());
+
+    let j = r#&quot;{&quot;Newtype&quot;:1}&quot;#;
+    let expected = E::Newtype(1);
+    assert_eq!(expected, from_str(j).unwrap());
+
+    let j = r#&quot;{&quot;Tuple&quot;:[1,2]}&quot;#;
+    let expected = E::Tuple(1, 2);
+    assert_eq!(expected, from_str(j).unwrap());
+
+    let j = r#&quot;{&quot;Struct&quot;:{&quot;a&quot;:1}}&quot;#;
+    let expected = E::Struct { a: 1 };
+    assert_eq!(expected, from_str(j).unwrap());
+}
+<span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    test_struct();
+</span><span class="boring">    test_enum();
+</span><span class="boring">}
+</span></code></pre></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                                                    <a rel="prev" href="impl-serializer.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+                                                    <a rel="next" href="lifetimes.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                                    <a rel="prev" href="impl-serializer.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+                                    <a rel="next" href="lifetimes.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                            </nav>
+
+        </div>
+
+        
+        
+        
+                <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+                <script src="ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="editor.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mode-rust.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-dawn.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-tomorrow_night.js" type="text/javascript" charset="utf-8"></script>
+        
+                <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+                <script type="text/javascript" src="theme/pagetoc.js"></script>
+        
+        
+    </body>
+</html>
