@@ -48,34 +48,27 @@ Serde 提供了数据结构与格式的交互层，让任何支持的数据结�
 
 - [JSON] 广泛用于 HTTP APIs 的数据格式
 - [Bincode] 在 Servo渲染引擎中用于 IPC 的一种压缩二进制格式
-- [CBOR]  a Concise Binary Object Representation designed for small message size
-  without the need for version negotiation.
-- [YAML], a self-proclaimed human-friendly configuration language that ain't
-  markup language.
-- [MessagePack], an efficient binary format that resembles a compact JSON.
-- [TOML], a minimal configuration format used by [Cargo].
-- [Pickle], a format common in the Python world.
-- [RON], a Rusty Object Notation.
-- [BSON], the data storage and network transfer format used by MongoDB.
-- [Avro], a binary format used within Apache Hadoop, with support for schema
-  definition.
-- [JSON5], a superset of JSON including some productions from ES5.
-- [Postcard], a no\_std and embedded-systems friendly compact binary format.
-- [URL] query strings, in the x-www-form-urlencoded format.
-- [Envy], a way to deserialize environment variables into Rust structs.
-  *(deserialization only)*
-- [Envy Store], a way to deserialize [AWS Parameter Store] parameters into Rust
-  structs. *(deserialization only)*
-- [S-expressions], the textual representation of code and data used by the Lisp
-  language family.
-- [D-Bus]'s binary wire format.
-- [FlexBuffers], the schemaless cousin of Google's FlatBuffers zero-copy
-  serialization format.
-- [Bencode], a simple binary format used in the BitTorrent protocol.
-- [DynamoDB Items], the format used by [rusoto_dynamodb] to transfer data to
-  and from DynamoDB.
-- [Hjson], a syntax extension to JSON designed around human reading and editing.
-  *(deserialization only)*
+- [CBOR] 简明二进制对象展现 (Concise Binary Object Representation) ，
+  一种不需要进行版本协商的小型二进制数据交换形式
+- [YAML] 自称是一种人性化（可读性高）的配置语言，但不是标记语言
+- [MessagePack] 类似于对 JSON 进行压缩的高效二进制格式
+- [TOML] 最小配置格式，被 [Cargo] 使用
+- [Pickle] Python 世界里常用的格式
+- [RON] Rusty Object Notation 看起来像 Rust 语法的数据格式，解决 JSON 无法区分同类/异类结构的问题
+- [BSON] 数据存储和网络传输的格式，被 MongoDB 使用
+- [Avro] 在 Apache Hadoop 内使用的一种二进制格式，支持 schema 定义
+- [JSON5] JSON 的超集，涵盖 ES5 的一些功能
+- [Postcard] 一种 no\_std  Rust 、对嵌入式系统友好的压缩二进制格式
+- [URL] 查询字符串，采用 x-www-form-urlencoded 格式
+- [Envy] 把系统环境变量反序列化成 Rust 结构体的一种方式（只支持反序列化）
+- [Envy Store] 把 [AWS Parameter Store] 的参数反序列化成 Rust 结构体的一种方式（只支持反序列化）
+- [S-expressions] 被 Lisp 语言家族使用的展现代码和数据的文本格式
+- [D-Bus] 二进制有线格式（用于 KDE 等桌面系统的低时延、低消耗的 IPC 通讯格式）
+- [FlexBuffers] Google 开发的 FlatBuffers 序列化格式，无模式 (schemaless)、零拷贝 (zero-copy)
+- [Bencode] BitTorrent 协议使用的一种简单二进制格式
+- [DynamoDB Items] [rusoto_dynamodb] 使用的格式，把数据转换成 DynamoDB ，
+  或者从 DynamoDB 转化数据
+- [Hjson] 针对 JSON 所设计的一种语法拓展，目的是可供人们阅读和编辑（只支持反序列化）
 
 [JSON]: https://github.com/serde-rs/json
 [Bincode]: https://github.com/servo/bincode
