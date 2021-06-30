@@ -5,9 +5,11 @@ multilingual = false
 src = "src"
 title = "serde-rs 入门文档"
 
-#[preprocessor.theme]
+[preprocessor.theme]
 pagetoc = true
+turn-off = true
 sidebar-width = "250px"
+sidebar-font-size = "0.9em"
 
 [output.html]
 default-theme = "ayu"

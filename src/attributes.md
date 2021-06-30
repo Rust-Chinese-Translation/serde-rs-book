@@ -1,20 +1,20 @@
-# Attributes
+# 属性
 
-[Attributes] are used to customize the `Serialize` and `Deserialize`
-implementations produced by Serde's derive. They require a Rust compiler version
-1.15 or newer.
+[属性][Attributes] (attributes) 用来对 Serde derive 宏生成的
+`Serialize` 和 `Deserialize` 实现进行自定义。
+这里的属性要求 Rust 编译器版本至少为 1.15 。
 
 [Attributes]: https://doc.rust-lang.org/book/attributes.html
 
-There are three categories of attributes:
+有三种属性：
 
-- [**Container attributes**] — apply to a struct or enum declaration.
-- [**Variant attributes**] — apply to a variant of an enum.
-- [**Field attributes**] — apply to one field in a struct or in an enum variant.
+- [**container 属性**] — 用在结构体或枚举体声明上
+- [**variant 属性**] — 用在枚举体的成员上
+- [**field 属性**] — 用在结构体字段上，或者枚举体成员上
 
-[**Container attributes**]: container-attrs.md
-[**Variant attributes**]: variant-attrs.md
-[**Field attributes**]: field-attrs.md
+[**container 属性**]: container-attrs.md
+[**variant 属性**]: variant-attrs.md
+[**field 属性**]: field-attrs.md
 
 ```rust
 # use serde::{Serialize, Deserialize};
@@ -36,5 +36,4 @@ enum E {
 # fn main() {}
 ```
 
-Note that a single struct, enum, variant, or field may have multiple attributes
-on it.
+注意：单个结构体、枚举体、成员或者字段都可能有多个属性。
